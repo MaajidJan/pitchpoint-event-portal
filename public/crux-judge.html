@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <meta name="theme-color" content="#020b0e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Judge Scoreboard & Private Leaderboard | Zindigi Prize BSEAS-H11</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-base: #020b0e;
+      --bg-surface: #041419;
+      --bg-surface-elevated: #072128;
+      --accent-cyan: #00f0d4;
+      --accent-cyan-dim: #00a390;
+      --accent-cyan-bright: #38f9d7;
+      --border-hairline: rgba(0, 240, 212, 0.18);
+      --border-active: rgba(0, 240, 212, 0.5);
+      --text-main: #f0fdfa;
+      --text-muted: #849ca7;
+      --text-dim: #4d6672;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(0, 240, 212, 0.05), transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(13, 148, 136, 0.06), transparent 45%);
+    }
+
+    /* Telemetry Bar */
+    .telemetry-bar {
+      background: #010709;
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 6px 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+    .telemetry-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .telemetry-unit {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .telemetry-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 8px var(--accent-cyan);
+      animation: pulse-dot 2s infinite ease-in-out;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* Navigation Bar */
+    .judge-nav {
+      background: rgba(4, 20, 25, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-hairline);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0.75rem 1.5rem;
+    }
+    .judge-nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .nav-brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .nav-brand-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+    .nav-brand-sub {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent-cyan);
+      display: block;
+    }
+
+    .nav-tab-group {
+      display: flex;
+      gap: 0.4rem;
+      background: rgba(2, 11, 14, 0.7);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--border-hairline);
+    }
+    .nav-tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-tab-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .nav-tab-btn.active {
+      background: rgba(0, 240, 212, 0.15);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      box-shadow: 0 0 12px rgba(0, 240, 212, 0.2);
+    }
+
+    .btn-hud {
+      background: rgba(0, 240, 212, 0.12);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-hud:hover {
+      background: var(--accent-cyan);
+      color: #020b0e;
+      box-shadow: 0 0 15px rgba(0, 240, 212, 0.4);
+    }
+    .btn-hud-danger {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #f87171;
+    }
+    .btn-hud-danger:hover {
+      background: #ef4444;
+      color: #fff;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+    }
+
+    /* Main Container */
+    .judge-viewport {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* Official Scoreboard Canvas Banner */
+    .scoreboard-banner {
+      background: linear-gradient(135deg, #073842 0%, #032128 50%, #021217 100%);
+      border: 2px solid var(--accent-cyan);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), inset 0 0 30px rgba(0, 240, 212, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+    .scoreboard-banner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 320px;
+      height: 100%;
+      background: radial-gradient(circle at 100% 0%, rgba(0, 240, 212, 0.15), transparent 70%);
+      pointer-events: none;
+    }
+    .scoreboard-header-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+      text-transform: uppercase;
+      line-height: 1.15;
+    }
+    .scoreboard-header-sub {
+      font-family: var(--font-mono);
+      color: var(--accent-cyan);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+
+    /* Top Selector Bar (Startup Name, Judge Name, Total Score) */
+    .scoreboard-top-bar {
+      display: grid;
+      grid-template-columns: 2fr 1.5fr 1.2fr;
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+      align-items: flex-end;
+    }
+    @media (max-width: 900px) {
+      .scoreboard-top-bar {
+        grid-template-columns: 1fr;
+      }
+    }
+    .hud-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .hud-label {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+    .hud-input, .hud-select {
+      background: rgba(2, 11, 14, 0.85);
+      border: 1px solid var(--border-active);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: all 0.2s;
+      width: 100%;
+    }
+    .hud-input:focus, .hud-select:focus {
+      border-color: var(--accent-cyan-bright);
+      box-shadow: 0 0 10px rgba(0, 240, 212, 0.3);
+    }
+    .total-score-badge {
+      background: rgba(0, 240, 212, 0.15);
+      border: 2px solid var(--accent-cyan);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px rgba(0, 240, 212, 0.2);
+    }
+    .total-score-number {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+    }
+    .total-score-max {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent-cyan);
+      margin-top: 3px;
+    }
+
+    /* Startup Summary Card */
+    .startup-dossier-card {
+      background: rgba(4, 20, 25, 0.75);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+      backdrop-filter: blur(12px);
+    }
+    @media (max-width: 800px) {
+      .startup-dossier-card {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Rubric Card Rows */
+    .rubric-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .rubric-card {
+      background: rgba(7, 33, 40, 0.45);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      display: grid;
+      grid-template-columns: 1.6fr 2.4fr;
+      gap: 1.5rem;
+      align-items: center;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .rubric-card:hover {
+      border-color: rgba(0, 240, 212, 0.4);
+      background: rgba(7, 33, 40, 0.65);
+    }
+    @media (max-width: 900px) {
+      .rubric-card {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+    }
+    .rubric-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .rubric-title {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .rubric-q1 {
+      font-size: 0.84rem;
+      color: #e2e8f0;
+      font-weight: 500;
+    }
+    .rubric-q2 {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* 1 to 10 Number Pill Group */
+    .pills-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .pills-row {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 5px;
+    }
+    .score-pill-btn {
+      background: rgba(2, 11, 14, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #94a3b8;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 700;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .score-pill-btn:hover {
+      border-color: var(--accent-cyan);
+      color: #fff;
+      background: rgba(0, 240, 212, 0.15);
+      transform: translateY(-2px);
+    }
+    .score-pill-btn.active {
+      background: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+      color: #020b0e;
+      font-weight: 800;
+      box-shadow: 0 0 14px rgba(0, 240, 212, 0.6);
+      transform: scale(1.08);
+    }
+    .pills-legend {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      padding: 0 4px;
+    }
+
+    /* Notes Area */
+    .notes-card {
+      background: rgba(7, 33, 40, 0.45);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .notes-textarea {
+      width: 100%;
+      height: 90px;
+      background: rgba(2, 11, 14, 0.85);
+      border: 1px solid var(--border-active);
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      padding: 0.75rem 1rem;
+      outline: none;
+      resize: vertical;
+      margin-top: 6px;
+    }
+    .notes-textarea:focus {
+      border-color: var(--accent-cyan-bright);
+      box-shadow: 0 0 10px rgba(0, 240, 212, 0.3);
+    }
+
+    /* Table Styles */
+    .hud-table-card {
+      background: rgba(4, 20, 25, 0.85);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    .hud-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+    .hud-table th {
+      background: rgba(2, 11, 14, 0.95);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+    .hud-table td {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+    }
+    .hud-table tr:hover td {
+      background: rgba(0, 240, 212, 0.04);
+      color: #fff;
+    }
+    .rank-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.85rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+    .rank-1 { background: rgba(251, 191, 36, 0.2); border-color: #fbbf24; color: #fbbf24; box-shadow: 0 0 12px rgba(251, 191, 36, 0.3); }
+    .rank-2 { background: rgba(148, 163, 184, 0.2); border-color: #94a3b8; color: #f1f5f9; }
+    .rank-3 { background: rgba(217, 119, 6, 0.2); border-color: #d97706; color: #f59e0b; }
+
+    /* Modal Overlay */
+    .hud-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 1rem;
+    }
+    .hud-modal-overlay.active {
+      display: flex;
+    }
+    .hud-modal-card {
+      background: #04171d;
+      border: 1px solid var(--border-active);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      max-width: 650px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Telemetry Bar -->
+  <aside class="telemetry-bar">
+    <div class="telemetry-inner">
+      <div class="telemetry-unit">
+        <span class="telemetry-dot" aria-hidden="true"></span>
+        <span style="color: var(--accent-cyan); font-weight: 700;">EVALUATION GRID: ACTIVE</span>
+      </div>
+      <div class="telemetry-unit">
+        <span style="color: var(--text-dim);">STAGE:</span>
+        <span style="color: #fff;">ZINDIGI PRIZE // BSEAS-H11</span>
+      </div>
+      <div class="telemetry-unit">
+        <span style="color: var(--text-dim);">VENUE:</span>
+        <span style="color: #fff;">AL-BERUNI AUDITORIUM</span>
+      </div>
+      <div class="telemetry-unit" style="margin-left: auto;">
+        <span style="color: var(--text-dim);">EVALUATOR:</span>
+        <span id="judgeProfileBadge" style="color: var(--accent-cyan); font-weight: 700;">Loading Judge...</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Navigation Bar -->
+  <nav class="judge-nav">
+    <div class="judge-nav-inner">
+      <div class="nav-brand-lockup">
+        <img src="/assets/zindigi_pitchpoint_logo.svg" alt="Zindigi Prize Pitch Point Logo" style="height: 38px;">
+        <div>
+          <span class="nav-brand-title">CAMPUS ROUNDS 2026-2027</span>
+          <span class="nav-brand-sub">// OFFICIAL SCOREBOARD & EVALUATION</span>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="nav-tab-group">
+        <button type="button" class="nav-tab-btn active" id="tabBtnScorecard" onclick="switchJudgeTab('scorecard')">
+          📋 [SCORECARD]
+        </button>
+        <button type="button" class="nav-tab-btn" id="tabBtnMyEvals" onclick="switchJudgeTab('my-evals')">
+          📑 [MY EVALUATIONS]
+        </button>
+        <button type="button" class="nav-tab-btn" id="tabBtnLeaderboard" onclick="switchJudgeTab('leaderboard')">
+          🏆 [PRIVATE LEADERBOARD]
+        </button>
+        <button type="button" class="nav-tab-btn" id="tabBtnFeedback" onclick="switchJudgeTab('feedback')">
+          💬 [EVENT FEEDBACK]
+        </button>
+      </div>
+
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <button type="button" class="btn-hud" style="font-size: 0.78rem;" onclick="refreshJudgeData()" title="Refresh live data">
+          ↺ Refresh
+        </button>
+        <button type="button" class="btn-hud btn-hud-danger" style="font-size: 0.78rem;" onclick="logoutJudge()">
+          Sign Out
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="judge-viewport">
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: LIVE EVALUATION SCORECARD          -->
+    <!-- ========================================== -->
+    <section id="viewScorecard">
+      
+      <!-- Scoreboard Official Header Banner -->
+      <div class="scoreboard-banner">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div class="scoreboard-header-title">CAMPUS ROUNDS 2026 -2027 SCOREBOARD</div>
+            <div class="scoreboard-header-sub">ZINDIGI PRIZE • LEADING DREAMS TO SUCCESS • BSEAS H-11 CAMPUS</div>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 0.76rem; color: #34d399; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; padding: 4px 10px; border-radius: 6px;">
+            ✓ OFFICIAL 6-DIMENSION CRITERIA
+          </div>
+        </div>
+
+        <!-- Top Selection Bar: Startup Selection, Judge Name, Total Score -->
+        <div class="scoreboard-top-bar">
+          <!-- Startup Selector (Both Dropdown & Live Filter) -->
+          <div class="hud-field-group">
+            <label class="hud-label" for="startupSelect">Startup Name / Pitch Team *</label>
+            <div style="display: flex; gap: 6px;">
+              <select id="startupSelect" class="hud-select" onchange="onStartupSelected(this.value)">
+                <option value="">-- Choose Startup to Evaluate --</option>
+              </select>
+            </div>
+            <!-- Type / Search filter -->
+            <input type="text" id="startupSearchInput" class="hud-input" placeholder="🔍 Type to filter startups..." oninput="filterStartupDropdown(this.value)" style="margin-top: 4px; padding: 0.45rem 0.75rem; font-size: 0.8rem;">
+          </div>
+
+          <!-- Judge Name Display (Auto-populated from login) -->
+          <div class="hud-field-group">
+            <label class="hud-label" for="judgeNameInput">Judge Name</label>
+            <input type="text" id="judgeNameInput" class="hud-input" readonly style="background: rgba(2, 11, 14, 0.6); color: var(--accent-cyan); font-weight: 700;">
+            <span style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">Evaluator credentials validated</span>
+          </div>
+
+          <!-- Live Total Score Display -->
+          <div class="total-score-badge">
+            <span class="hud-label" style="font-size: 0.7rem; color: var(--accent-cyan);">TOTAL SCORE</span>
+            <div class="total-score-number" id="liveTotalDisplay">0</div>
+            <span class="total-score-max">MAX: 60 POINTS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Startup Dossier Preview -->
+      <div id="startupDossierCard" class="startup-dossier-card" style="display: none;">
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-cyan); font-weight: 700;" id="dossierTeamId">CRUX-XXX</div>
+          <h2 style="font-family: var(--font-display); font-size: 1.5rem; color: #fff; margin-top: 2px;" id="dossierStartupName">Startup Title</h2>
+          <div style="font-size: 0.88rem; color: var(--accent-cyan-bright); font-weight: 700; margin-bottom: 8px;" id="dossierTeamName">Team Name</div>
+          
+          <div style="font-size: 0.84rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 6px;">
+            <strong style="color: var(--accent-cyan);">Concept:</strong> <span id="dossierConcept">-</span>
+          </div>
+          <div style="font-size: 0.84rem; color: #cbd5e1; line-height: 1.45;">
+            <strong style="color: #fbbf24;">Problem Statement:</strong> <span id="dossierProblem">-</span>
+          </div>
+        </div>
+
+        <div style="border-left: 1px solid var(--border-hairline); padding-left: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <span class="hud-label">Founder / Team Lead</span>
+            <div style="color: #fff; font-weight: 700; font-size: 0.95rem; margin-top: 2px;" id="dossierLeader">-</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); font-family: var(--font-mono);" id="dossierDept">-</div>
+
+            <span class="hud-label" style="margin-top: 10px; display: block;">Maturity Bracket</span>
+            <div id="dossierStage" style="font-size: 0.85rem; color: #34d399; font-weight: 700; font-family: var(--font-mono);">-</div>
+          </div>
+
+          <div style="margin-top: 1rem;" id="dossierDeckContainer">
+            <a id="dossierDeckBtn" href="#" target="_blank" class="btn-hud" style="font-size: 0.75rem; width: 100%; justify-content: center;">
+              📂 [OPEN PITCH DECK ↗]
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- The 6 Scoreboard Criteria Form -->
+      <form id="evaluationForm" onsubmit="handleScoreSubmit(event)">
+        <div class="rubric-grid">
+
+          <!-- 1. IDEA -->
+          <div class="rubric-card">
+            <div class="rubric-info">
+              <div class="rubric-title">💡 IDEA</div>
+              <div class="rubric-q1">How innovative and real the idea is?</div>
+              <div class="rubric-q2">How much this idea aligns with the case challenge?</div>
+            </div>
+            <div class="pills-container">
+              <div class="pills-row" data-criteria="idea">
+                <!-- 1 to 10 Pills -->
+                <button type="button" class="score-pill-btn" onclick="setScore('idea', 1)">1</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('idea', 2)">2</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('idea', 3)">3</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('idea', 4)">4</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('idea', 5)">5</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('idea', 6)">6</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('idea', 7)">7</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('idea', 8)">8</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('idea', 9)">9</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('idea', 10)">10</button>
+              </div>
+              <div class="pills-legend">
+                <span>◀ Lowest (1)</span>
+                <span>Highest (10) ▶</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. SOLUTION -->
+          <div class="rubric-card">
+            <div class="rubric-info">
+              <div class="rubric-title">⚙️ SOLUTION</div>
+              <div class="rubric-q1">Is the presented solution realistic?</div>
+              <div class="rubric-q2">Does the startup have enough clarity regarding the solution?</div>
+            </div>
+            <div class="pills-container">
+              <div class="pills-row" data-criteria="solution">
+                <button type="button" class="score-pill-btn" onclick="setScore('solution', 1)">1</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('solution', 2)">2</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('solution', 3)">3</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('solution', 4)">4</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('solution', 5)">5</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('solution', 6)">6</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('solution', 7)">7</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('solution', 8)">8</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('solution', 9)">9</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('solution', 10)">10</button>
+              </div>
+              <div class="pills-legend">
+                <span>◀ Lowest (1)</span>
+                <span>Highest (10) ▶</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. BUSINESS -->
+          <div class="rubric-card">
+            <div class="rubric-info">
+              <div class="rubric-title">💼 BUSINESS</div>
+              <div class="rubric-q1">Has the startup clearly defined their revenue stream?</div>
+              <div class="rubric-q2">How much clarity do they have to convert their idea into business?</div>
+            </div>
+            <div class="pills-container">
+              <div class="pills-row" data-criteria="business">
+                <button type="button" class="score-pill-btn" onclick="setScore('business', 1)">1</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('business', 2)">2</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('business', 3)">3</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('business', 4)">4</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('business', 5)">5</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('business', 6)">6</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('business', 7)">7</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('business', 8)">8</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('business', 9)">9</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('business', 10)">10</button>
+              </div>
+              <div class="pills-legend">
+                <span>◀ Lowest (1)</span>
+                <span>Highest (10) ▶</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. IMPACT -->
+          <div class="rubric-card">
+            <div class="rubric-info">
+              <div class="rubric-title">🌍 IMPACT</div>
+              <div class="rubric-q1">Can this idea have a significant impact on the society?</div>
+              <div class="rubric-q2">Are they targeting any UN SDGs?</div>
+            </div>
+            <div class="pills-container">
+              <div class="pills-row" data-criteria="impact">
+                <button type="button" class="score-pill-btn" onclick="setScore('impact', 1)">1</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('impact', 2)">2</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('impact', 3)">3</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('impact', 4)">4</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('impact', 5)">5</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('impact', 6)">6</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('impact', 7)">7</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('impact', 8)">8</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('impact', 9)">9</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('impact', 10)">10</button>
+              </div>
+              <div class="pills-legend">
+                <span>◀ Lowest (1)</span>
+                <span>Highest (10) ▶</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. STARTUP -->
+          <div class="rubric-card">
+            <div class="rubric-info">
+              <div class="rubric-title">👥 STARTUP</div>
+              <div class="rubric-q1">Do they have any X-Factor in them?</div>
+              <div class="rubric-q2">Does the startup show commitment and dedication?</div>
+            </div>
+            <div class="pills-container">
+              <div class="pills-row" data-criteria="startup">
+                <button type="button" class="score-pill-btn" onclick="setScore('startup', 1)">1</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('startup', 2)">2</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('startup', 3)">3</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('startup', 4)">4</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('startup', 5)">5</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('startup', 6)">6</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('startup', 7)">7</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('startup', 8)">8</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('startup', 9)">9</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('startup', 10)">10</button>
+              </div>
+              <div class="pills-legend">
+                <span>◀ Lowest (1)</span>
+                <span>Highest (10) ▶</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. JUDGES -->
+          <div class="rubric-card">
+            <div class="rubric-info">
+              <div class="rubric-title">⚖️ JUDGES</div>
+              <div class="rubric-q1">How strongly do you think this startup should be qualified for regionals?</div>
+              <div class="rubric-q2">Overall potential, stage poise & readiness</div>
+            </div>
+            <div class="pills-container">
+              <div class="pills-row" data-criteria="judges">
+                <button type="button" class="score-pill-btn" onclick="setScore('judges', 1)">1</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('judges', 2)">2</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('judges', 3)">3</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('judges', 4)">4</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('judges', 5)">5</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('judges', 6)">6</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('judges', 7)">7</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('judges', 8)">8</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('judges', 9)">9</button>
+                <button type="button" class="score-pill-btn" onclick="setScore('judges', 10)">10</button>
+              </div>
+              <div class="pills-legend">
+                <span>◀ Lowest (1)</span>
+                <span>Highest (10) ▶</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Notes Field -->
+        <div class="notes-card">
+          <label class="hud-label" for="notesInput" style="display: flex; justify-content: space-between;">
+            <span>Notes / Observations / Strengths & Feedback</span>
+            <span style="color: var(--text-dim);">(Optional Remarks)</span>
+          </label>
+          <textarea id="notesInput" class="notes-textarea" placeholder="Enter key observations, market viability advice, or feedback for this founder..."></textarea>
+        </div>
+
+        <!-- Submission Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+          <button type="button" class="btn-hud btn-hud-danger" onclick="resetScorecardForm()">
+            ↺ Clear Form
+          </button>
+          
+          <button type="submit" id="btnSubmitScore" class="btn-hud" style="font-size: 1.05rem; padding: 0.85rem 2.5rem; background: var(--accent-cyan); color: #020b0e; font-weight: 800; border-radius: var(--radius-md);">
+            💾 SUBMIT SCORECARD & RECORD EVALUATION
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: MY EVALUATIONS                     -->
+    <!-- ========================================== -->
+    <section id="viewMyEvals" style="display: none;">
+      <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h2 style="font-family: var(--font-display); font-size: 1.6rem; color: #fff;">My Submitted Evaluations</h2>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">All startup pitch assessments recorded under your judge profile</p>
+        </div>
+        <div id="myEvalsCountBadge" style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-cyan); background: rgba(0, 240, 212, 0.1); border: 1px solid var(--border-active); padding: 4px 12px; border-radius: 8px;">
+          0 Startups Evaluated
+        </div>
+      </div>
+
+      <div class="hud-table-card">
+        <table class="hud-table">
+          <thead>
+            <tr>
+              <th>Startup / Venture</th>
+              <th>Maturity Stage</th>
+              <th>Founder</th>
+              <th>Breakdown (Idea/Sol/Biz/Imp/Start/Jdg)</th>
+              <th>Total Score</th>
+              <th>Notes</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="myEvalsTbody">
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">Loading your evaluations...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 3: PRIVATE LEADERBOARD               -->
+    <!-- ========================================== -->
+    <section id="viewLeaderboard" style="display: none;">
+      <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 0.76rem; color: #fbbf24; font-weight: 700; letter-spacing: 1px;">
+            🔒 INTERNAL STEERING & JUDGES LEADERBOARD • CONFIDENTIAL
+          </div>
+          <h2 style="font-family: var(--font-display); font-size: 1.6rem; color: #fff; margin-top: 2px;">
+            Campus Round Consensus Rankings
+          </h2>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">
+            Aggregated rankings across all judges. Teams are ordered by Average Total Score (/60).
+          </p>
+        </div>
+
+        <!-- Classification Filter Tabs & Download Button -->
+        <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+          <a href="/results.csv" download="PitchPoint_Judging_Leaderboard_2026.csv" class="btn-hud" style="font-size: 0.74rem; background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #34d399; font-weight: 700; text-decoration: none;">
+            📥 [DOWNLOAD EXCEL / CSV LEADERBOARD]
+          </a>
+          <button type="button" class="btn-hud" style="font-size: 0.74rem;" onclick="filterLeaderboardByStage('ALL', this)">All Startups</button>
+          <button type="button" class="btn-hud" style="font-size: 0.74rem;" onclick="filterLeaderboardByStage('IDEA', this)">Idea Stage</button>
+          <button type="button" class="btn-hud" style="font-size: 0.74rem;" onclick="filterLeaderboardByStage('PROTO', this)">Prototype</button>
+          <button type="button" class="btn-hud" style="font-size: 0.74rem;" onclick="filterLeaderboardByStage('MVP', this)">MVP Stage</button>
+          <button type="button" class="btn-hud" style="font-size: 0.74rem;" onclick="filterLeaderboardByStage('LAUNCH', this)">Market Launched</button>
+        </div>
+      </div>
+
+      <div class="hud-table-card">
+        <table class="hud-table">
+          <thead>
+            <tr>
+              <th style="width: 70px;">Rank</th>
+              <th>Startup / Venture</th>
+              <th>Maturity</th>
+              <th>Founder</th>
+              <th>Judge Consensus</th>
+              <th>Avg Score (/60)</th>
+              <th>Criteria Averages</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardTbody">
+            <tr>
+              <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">Loading consensus leaderboard...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 4: JUDGE EVENT FEEDBACK & RECOMMENDATIONS -->
+    <!-- ========================================== -->
+    <section id="viewFeedback" style="display: none;">
+      <div class="scoreboard-banner" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div class="scoreboard-header-title">CAMPUS ROUNDS 2026-2027 JUDGE & EVALUATOR FEEDBACK</div>
+            <div class="scoreboard-header-sub">ZINDIGI PRIZE • BSEAS H-11 CAMPUS • EXECUTIVE ADVISORY & EVENT RETROSPECTIVE</div>
+          </div>
+          <div id="feedbackSavedBadge" style="display: none; font-family: var(--font-mono); font-size: 0.76rem; color: #34d399; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; padding: 4px 10px; border-radius: 6px;">
+            ✓ FEEDBACK SAVED ON RECORD
+          </div>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.75rem; max-width: 900px; line-height: 1.5;">
+          Respected Evaluator, your insights and expert critique are vital to shaping future campus rounds and guiding the top national qualifying teams. Please share your candid observations below.
+        </p>
+      </div>
+
+      <div class="score-card" style="padding: 2rem; max-width: 950px; margin: 0 auto;">
+        
+        <!-- Ratings Grid (1 to 5) -->
+        <h3 style="font-family: var(--font-display); color: #fff; font-size: 1.25rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;">
+          <span>⭐</span> Key Event Dimension Ratings (1 = Poor, 5 = Outstanding)
+        </h3>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+          
+          <!-- Rating 1: Overall Event Experience -->
+          <div style="background: rgba(2, 11, 14, 0.6); border: 1px solid var(--border-hairline); border-radius: var(--radius-md); padding: 1.25rem;">
+            <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.5rem;">
+              1. OVERALL EVENT EXPERIENCE
+            </label>
+            <div style="color: var(--text-muted); font-size: 0.78rem; margin-bottom: 0.85rem;">Overall quality and atmosphere of PitchPoint</div>
+            <div class="rating-btn-group" id="groupOverallRating" style="display: flex; gap: 8px;">
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('overall', 1)">1</button>
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('overall', 2)">2</button>
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('overall', 3)">3</button>
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('overall', 4)">4</button>
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('overall', 5)">5</button>
+            </div>
+            <input type="hidden" id="fbRatingOverall" value="5">
+          </div>
+
+          <!-- Rating 2: Organization & Time Management -->
+          <div style="background: rgba(2, 11, 14, 0.6); border: 1px solid var(--border-hairline); border-radius: var(--radius-md); padding: 1.25rem;">
+            <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.5rem;">
+              2. STAGE & TIME MANAGEMENT
+            </label>
+            <div style="color: var(--text-muted); font-size: 0.78rem; margin-bottom: 0.85rem;">Pacing of presentations, queue control, audio</div>
+            <div class="rating-btn-group" id="groupOrgRating" style="display: flex; gap: 8px;">
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('org', 1)">1</button>
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('org', 2)">2</button>
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('org', 3)">3</button>
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('org', 4)">4</button>
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('org', 5)">5</button>
+            </div>
+            <input type="hidden" id="fbRatingOrg" value="5">
+          </div>
+
+          <!-- Rating 3: Pitch Quality & Innovation -->
+          <div style="background: rgba(2, 11, 14, 0.6); border: 1px solid var(--border-hairline); border-radius: var(--radius-md); padding: 1.25rem;">
+            <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.5rem;">
+              3. STARTUP QUALITY & INNOVATION
+            </label>
+            <div style="color: var(--text-muted); font-size: 0.78rem; margin-bottom: 0.85rem;">Standard of student ventures, decks & prototypes</div>
+            <div class="rating-btn-group" id="groupPitchRating" style="display: flex; gap: 8px;">
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('pitch', 1)">1</button>
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('pitch', 2)">2</button>
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('pitch', 3)">3</button>
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('pitch', 4)">4</button>
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('pitch', 5)">5</button>
+            </div>
+            <input type="hidden" id="fbRatingPitch" value="5">
+          </div>
+
+          <!-- Rating 4: Venue & Hospitality -->
+          <div style="background: rgba(2, 11, 14, 0.6); border: 1px solid var(--border-hairline); border-radius: var(--radius-md); padding: 1.25rem;">
+            <label style="display: block; font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.5rem;">
+              4. AUDITORIUM & HOSPITALITY
+            </label>
+            <div style="color: var(--text-muted); font-size: 0.78rem; margin-bottom: 0.85rem;">Auditorium comfort, judge desk arrangement</div>
+            <div class="rating-btn-group" id="groupVenueRating" style="display: flex; gap: 8px;">
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('venue', 1)">1</button>
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('venue', 2)">2</button>
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('venue', 3)">3</button>
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('venue', 4)">4</button>
+              <button type="button" class="btn-hud" style="flex: 1; padding: 6px 0; font-size: 0.85rem;" onclick="setFeedbackRating('venue', 5)">5</button>
+            </div>
+            <input type="hidden" id="fbRatingVenue" value="5">
+          </div>
+
+        </div>
+
+        <!-- Qualitative Feedback -->
+        <h3 style="font-family: var(--font-display); color: #fff; font-size: 1.25rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;">
+          <span>📝</span> Qualitative Observations & Mentorship Notes
+        </h3>
+
+        <div style="display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 2rem;">
+          
+          <div class="hud-field-group">
+            <label class="hud-label" for="fbHighlights">
+              🌟 What was the greatest strength or highlight of this year's campus round?
+            </label>
+            <textarea id="fbHighlights" class="hud-textarea" rows="3" placeholder="e.g. Energetic pitching teams, innovative AI & sustainability solutions, well-coordinated stage operations..."></textarea>
+          </div>
+
+          <div class="hud-field-group">
+            <label class="hud-label" for="fbImprovements">
+              💡 Recommendations / Areas for Future Improvement
+            </label>
+            <textarea id="fbImprovements" class="hud-textarea" rows="3" placeholder="e.g. Give teams strict 3-minute pitch timers, more emphasis on unit economics and customer validation..."></textarea>
+          </div>
+
+          <div class="hud-field-group">
+            <label class="hud-label" for="fbComments">
+              💬 General Comments & Advice for the Qualifying Teams
+            </label>
+            <textarea id="fbComments" class="hud-textarea" rows="3" placeholder="e.g. Advice for national semi-finals, mentorship suggestions, or encouraging remarks for the founders..."></textarea>
+          </div>
+
+        </div>
+
+        <!-- Submit & Status Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-top: 1px solid var(--border-hairline); padding-top: 1.5rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);" id="feedbackStatusText">
+            All feedback is kept confidential and shared only with executive leadership.
+          </div>
+          <button type="button" class="btn-hud btn-hud-emerald" style="padding: 0.75rem 1.75rem; font-size: 0.9rem;" onclick="submitJudgeFeedback()">
+            💾 [SAVE & SUBMIT MY FEEDBACK]
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal: Judge Breakdown Details for a Startup -->
+  <div class="hud-modal-overlay" id="scorecardDetailModal">
+    <div class="hud-modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent-cyan); font-weight: 700;">[INDIVIDUAL JUDGE ASSESSMENTS]</div>
+          <h3 id="modalStartupTitle" style="font-family: var(--font-display); color: #fff; font-size: 1.4rem; margin-top: 2px;">Startup Name</h3>
+          <div id="modalTeamSub" style="color: var(--text-muted); font-size: 0.85rem;">Team</div>
+        </div>
+        <button type="button" class="btn-hud" style="padding: 2px 8px; font-size: 0.85rem;" onclick="closeModal()">✕</button>
+      </div>
+
+      <div id="modalScorecardsContainer" style="display: flex; flex-direction: column; gap: 0.85rem; max-height: 60vh; overflow-y: auto;">
+        <!-- Populated via JS -->
+      </div>
+
+      <div style="margin-top: 1.5rem; text-align: right;">
+        <button type="button" class="btn-hud" onclick="closeModal()">[CLOSE]</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="crux-judge.js"></script>
+</body>
+</html>

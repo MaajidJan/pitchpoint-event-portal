@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 100" fill="none">
+  <!-- Stylized Zindigi Double Ribbon / Hourglass Z Emblem for Light Theme -->
+  <g transform="translate(10, 15)">
+    <defs>
+      <linearGradient id="zGradLight1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#0d9488"/>
+        <stop offset="100%" stop-color="#044e54"/>
+      </linearGradient>
+      <linearGradient id="zGradLight2" x1="100%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#14b8a6"/>
+        <stop offset="100%" stop-color="#0d9488"/>
+      </linearGradient>
+    </defs>
+    <!-- Faceted Crystal Prism Monolith -->
+    <polygon points="35,0 70,18 70,52 35,70 0,52 0,18" fill="#e6f7f5" stroke="url(#zGradLight1)" stroke-width="2.5"/>
+    <!-- Inner Glowing Core -->
+    <polygon points="35,12 55,24 55,46 35,58 15,46 15,24" fill="url(#zGradLight2)" opacity="0.25"/>
+    <path d="M22,25 L48,25 L22,45 L48,45" stroke="#042a2b" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="35" cy="35" r="3.5" fill="#0d9488"/>
+  </g>
+
+  <!-- Typography Cluster -->
+  <g transform="translate(95, 20)">
+    <!-- Subtitle: ZINDIGI PRIZE -->
+    <text x="0" y="16" font-family="'Space Grotesk', 'Plus Jakarta Sans', sans-serif" font-weight="700" font-size="13" letter-spacing="3.5" fill="#0f766e">
+      ZINDIGI PRIZE
+    </text>
+    
+    <!-- Campus Badge Pill -->
+    <g transform="translate(145, 4)">
+      <rect x="0" y="0" width="76" height="15" rx="3" fill="#0d9488"/>
+      <text x="38" y="11" font-family="'JetBrains Mono', monospace" font-weight="800" font-size="9" fill="#ffffff" text-anchor="middle" letter-spacing="1">
+        BSEAS-H11
+      </text>
+    </g>
+
+    <!-- Main Title: PITCH POINT -->
+    <text x="0" y="48" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="28" letter-spacing="2" fill="#042a2b">
+      PITCH POINT
+    </text>
+
+    <!-- Micro-rule -->
+    <line x1="0" y1="56" x2="225" y2="56" stroke="#0d9488" stroke-width="1.5" stroke-opacity="0.6"/>
+  </g>
+</svg>

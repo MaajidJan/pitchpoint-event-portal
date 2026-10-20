@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stage & Pitch Slot Operations | Zindigi Prize BSEAS-H11</title>
+  <meta name="description" content="Dedicated Stage Coordination & Pitch Slotting Console for Zindigi Prize BSEAS-H11 Campus Rounds.">
+  <link rel="stylesheet" href="/ideacrux.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23020b0e'/><circle cx='50' cy='50' r='30' stroke='%2338bdf8' stroke-width='8' fill='none'/><path d='M35 50L65 50' stroke='%2338bdf8' stroke-width='8'/></svg>">
+  <style>
+    :root {
+      --accent-coord: #38bdf8;
+      --accent-purple: #c084fc;
+    }
+    body {
+      background: #020b0e;
+      color: #e2e8f0;
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .coord-nav {
+      background: rgba(4, 20, 25, 0.94);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-hairline);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0.75rem 1.5rem;
+    }
+    .coord-nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .coord-viewport {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      width: 100%;
+      flex: 1;
+    }
+    .hud-card {
+      background: rgba(4, 24, 30, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    }
+    .badge-stage {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .badge-arrived {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+    .badge-waiting {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fbbf24;
+    }
+    .table-responsive {
+      overflow-x: auto;
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      background: rgba(2, 11, 14, 0.85);
+    }
+    .hud-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    .hud-table th {
+      background: rgba(4, 20, 25, 0.98);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+    .hud-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 0.85rem;
+    }
+    .hud-table tr:hover td {
+      background: rgba(56, 189, 248, 0.03);
+    }
+    .slot-input {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #38bdf8;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      width: 140px;
+      transition: all 0.2s;
+    }
+    .slot-input:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+      background: rgba(0, 0, 0, 0.7);
+    }
+    .toast-notification {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #042027;
+      border: 1.5px solid var(--accent-coord);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Telemetry & Role HUD -->
+  <aside class="telemetry-bar">
+    <div class="telemetry-inner" style="max-width: 1400px; margin: 0 auto; display: flex; align-items: center; gap: 1rem; padding: 0 1.5rem;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="width: 8px; height: 8px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 8px #38bdf8; display: inline-block;"></span>
+        <span style="color: #38bdf8; font-weight: 800; font-family: var(--font-mono); font-size: 0.75rem;">STAGE & SLOTS OPERATIONS DESK</span>
+      </div>
+      <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);">
+        VENUE: <span style="color: #fff;">AL-BERUNI AUDITORIUM</span>
+      </div>
+      <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">OPERATOR:</span>
+        <span id="coordProfileBadge" style="color: #38bdf8; font-weight: 700; font-family: var(--font-mono); font-size: 0.75rem;">Loading...</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Navigation Bar -->
+  <nav class="coord-nav">
+    <div class="coord-nav-inner">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <img src="/assets/zindigi_pitchpoint_logo.svg" alt="Pitch Point Logo" style="height: 36px;">
+        <div>
+          <div style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 800; color: #fff;">PITCH STAGE & SLOTS DESK</div>
+          <div style="font-family: var(--font-mono); font-size: 0.72rem; color: #38bdf8;">// AUDITORIUM LINEUP, ARRIVALS & PRESENTER QUEUE</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+        <button type="button" class="hud-btn hud-btn-outline" id="btnAudioToggle" onclick="toggleAudioAlerts()" title="Enable or disable arrival audio chime">
+          🔔 Sound: ON
+        </button>
+        <button type="button" class="hud-btn hud-btn-outline" onclick="loadCoordinatorData()">
+          🔄 [REFRESH]
+        </button>
+        <a href="/ideacrux.html" target="_blank" class="hud-btn hud-btn-outline" style="color: var(--accent-cyan);">
+          🌐 [VIEW PUBLIC STAGE]
+        </a>
+        <button type="button" class="hud-btn hud-btn-danger" onclick="logoutCoordinator()">
+          [SIGN OUT]
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="coord-viewport">
+
+    <!-- 1. Live Pitch Stage Call-Up Controller -->
+    <section class="hud-card" style="border: 1.5px solid #38bdf8; background: linear-gradient(135deg, rgba(3, 31, 38, 0.95), rgba(2, 11, 14, 0.98));">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="width: 10px; height: 10px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 10px #ef4444; display: inline-block;"></span>
+          <div>
+            <div style="font-family: var(--font-mono); font-size: 0.72rem; color: #ef4444; font-weight: 800; letter-spacing: 1px;">🔴 AUDITORIUM STAGE BROADCAST CONTROL</div>
+            <h2 style="font-family: var(--font-display); font-size: 1.25rem; color: #fff; margin-top: 2px;">Presenter Call-Up & Real-Time Queue</h2>
+          </div>
+        </div>
+        <div style="font-size: 0.76rem; color: var(--text-muted); font-family: var(--font-mono);">
+          Auto-updates public screen on <a href="/ideacrux.html" target="_blank" style="color: #38bdf8; text-decoration: underline;">ideacrux.html</a>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+        <!-- Currently Pitching -->
+        <div>
+          <label class="form-label" style="font-size: 0.75rem; color: var(--accent-cyan); font-weight: 700;">
+            🎤 1. CURRENTLY PRESENTING
+          </label>
+          <select id="stageCurrentTeamSelect" class="hud-select" style="width: 100%; font-size: 0.85rem;">
+            <option value="">-- No Team Selected (Stage Idle) --</option>
+          </select>
+        </div>
+
+        <!-- Next in Queue -->
+        <div>
+          <label class="form-label" style="font-size: 0.75rem; color: var(--accent-purple); font-weight: 700;">
+            ⏭️ 2. NEXT UP IN QUEUE (ON DECK)
+          </label>
+          <select id="stageNextTeamSelect" class="hud-select" style="width: 100%; font-size: 0.85rem;">
+            <option value="">-- No Team Selected --</option>
+          </select>
+        </div>
+
+        <!-- Stage Status -->
+        <div>
+          <label class="form-label" style="font-size: 0.75rem; color: #fff; font-weight: 700;">
+            📡 STAGE STATUS
+          </label>
+          <select id="stageStatusSelect" class="hud-select" style="width: 100%; font-size: 0.85rem;">
+            <option value="PITCH_IN_PROGRESS">🎤 Pitch In Progress</option>
+            <option value="JUDGE_QA">⚖️ Q&A With Judges</option>
+            <option value="NEXT_TEAM_READY">⏭️ Next Team Take Position</option>
+            <option value="STAGE_BREAK">☕ Short Break / Deliberation</option>
+            <option value="STAGE_READY">🟢 Stage Ready</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 0.75rem;">
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #cbd5e1; cursor: pointer;">
+          <input type="checkbox" id="chkSendEmailToNext" checked style="accent-color: #38bdf8; width: 16px; height: 16px;">
+          <span>Auto-dispatch urgent call-up email to Next Team Leader ("You are next on stage!")</span>
+        </label>
+
+        <button type="button" class="hud-btn hud-btn-cyan" style="font-size: 0.82rem; padding: 6px 18px;" onclick="updateLivePitchStage()">
+          📢 [BROADCAST LIVE STAGE UPDATE]
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. Presenter Arrival & Timing Slot Ledger -->
+    <section class="hud-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <h3 style="font-family: var(--font-display); font-size: 1.2rem; color: #fff;">Startup Lineup & Timing Slots</h3>
+          <p style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px;">
+            Confirmed teams admitted for pitching. Assign timing slots & track auditorium attendance.
+          </p>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+          <input type="text" id="coordSearchInput" class="hud-search-input" placeholder="🔍 Search team, startup, leader..." style="width: 240px; font-size: 0.82rem;" oninput="filterCoordinatorTeams()">
+          
+          <select id="coordArrivalFilter" class="hud-select" style="font-size: 0.82rem;" onchange="filterCoordinatorTeams()">
+            <option value="ALL">All Teams</option>
+            <option value="ARRIVED">✅ Arrived at Auditorium</option>
+            <option value="NOT_ARRIVED">⏳ Not Yet Arrived</option>
+            <option value="SLOTTED">⏱️ Slot Assigned</option>
+            <option value="UNSLOTTED">⚠️ No Slot Assigned</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Pills -->
+      <div style="display: flex; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap;">
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 6px 14px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.78rem;">
+          Total Confirmed: <strong id="metricTotalTeams" style="color: #fff;">0</strong>
+        </div>
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 6px 14px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.78rem;">
+          Arrived at Auditorium: <strong id="metricArrivedTeams" style="color: #34d399;">0</strong>
+        </div>
+        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 6px 14px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.78rem;">
+          Pending Arrival: <strong id="metricPendingArrival" style="color: #fbbf24;">0</strong>
+        </div>
+        <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); padding: 6px 14px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.78rem;">
+          Slots Assigned: <strong id="metricSlottedTeams" style="color: #38bdf8;">0</strong>
+        </div>
+      </div>
+
+      <!-- Teams Table -->
+      <div class="table-responsive">
+        <table class="hud-table">
+          <thead>
+            <tr>
+              <th>Startup / Venture</th>
+              <th>Lead Presenter</th>
+              <th>Contact & WhatsApp</th>
+              <th>Maturity Bracket</th>
+              <th>Auditorium Arrival</th>
+              <th>Timing Slot</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="coordinatorTeamsTableBody">
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2.5rem;">
+                Loading admitted startup lineup...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Live Arrival Notification Toast -->
+  <div id="toastNotification" class="toast-notification">
+    <span style="font-size: 1.5rem;">📢</span>
+    <div>
+      <div style="font-weight: 800; font-size: 0.88rem;" id="toastTitle">Team Arrived!</div>
+      <div style="font-size: 0.75rem; color: #94a3b8;" id="toastBody">EcoCharge Innovations checked in at Al-Beruni.</div>
+    </div>
+  </div>
+
+  <script src="/crux-slots.js"></script>
+</body>
+</html>

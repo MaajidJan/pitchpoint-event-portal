@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Cloudflare Wrangler & Local Secrets
+.wrangler/
+.dev.vars
+.env
+.env.*
+*.pem
+*.key
+*.cert
+
+# Private Event Data & Receipts
+backups/
+test_slips/
+ALL_PASSWORDS*.md
+*LEADERBOARD_RESULTS*.csv
+*.csv
+
+# Heavy AI Model Weights & Downloaded Media
+scripts/downloaded_photos/
+scripts/*.onnx
+scripts/*.html
+eng.traineddata
+
+# Android Studio & Gradle
+easypaisa_forwarder/.gradle/
+easypaisa_forwarder/.idea/
+easypaisa_forwarder/build/
+easypaisa_forwarder/app/build/
+easypaisa_forwarder/local.properties
+*.iml
+
+# Logs & OS Cache
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.vscode/

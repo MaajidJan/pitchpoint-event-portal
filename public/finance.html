@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <meta name="theme-color" content="#070a13">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Head of Finance Console | Zindigi Prize BSEAS-H11</title>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    (function() {
+      try {
+        const token = localStorage.getItem('bahria_auth_token');
+        const userStr = localStorage.getItem('bahria_staff_user');
+        const user = userStr ? JSON.parse(userStr) : null;
+        if (!token || !user || (user.role !== 'FINANCE' && user.role !== 'ADMIN')) {
+          window.location.replace('/login.html?redirect=finance.html');
+        }
+      } catch(e) {
+        window.location.replace('/login.html?redirect=finance.html');
+      }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .finance-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 1.5rem 1rem;
+    }
+    .fin-metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+    .fin-metric-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 18px;
+      padding: 1.25rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .fin-metric-title {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+    .fin-metric-val {
+      font-family: var(--font-heading);
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .drawer-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 16px;
+      padding: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 0.85rem;
+      transition: all 0.2s ease;
+    }
+    .drawer-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .drawer-unapproved {
+      border-left: 4px solid #fbbf24;
+      background: rgba(251, 191, 36, 0.04);
+    }
+    .drawer-approved {
+      border-left: 4px solid #10b981;
+      background: rgba(16, 185, 129, 0.04);
+    }
+    .badge-status {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .badge-unapproved {
+      background: rgba(251, 191, 36, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.4);
+    }
+    .badge-approved {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    .nav-user-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #a5b4fc;
+    }
+
+    .pending-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      border-left: 5px solid #fbbf24;
+      border-radius: 16px;
+      padding: 1.25rem 1.4rem;
+      margin-bottom: 1rem;
+      display: grid;
+      grid-template-columns: 1fr 130px 180px;
+      gap: 1.25rem;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+    .pending-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(251, 191, 36, 0.6);
+      transform: translateY(-2px);
+    }
+    @media (max-width: 900px) {
+      .pending-card {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+    }
+    .slip-thumb-box {
+      width: 100%;
+      height: 95px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: #000;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .slip-thumb-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.25s ease;
+    }
+    .slip-thumb-box:hover img {
+      transform: scale(1.08);
+    }
+    .slip-thumb-hover {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .slip-thumb-box:hover .slip-thumb-hover {
+      opacity: 1;
+    }
+    .badge-crux {
+      background: rgba(0, 240, 212, 0.15);
+      color: #00f0d4;
+      border: 1px solid rgba(0, 240, 212, 0.35);
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .badge-fiesta {
+      background: rgba(99, 102, 241, 0.18);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .badge-trx {
+      background: rgba(255, 255, 255, 0.06);
+      color: #f1f5f9;
+      font-family: monospace;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav>
+    <a href="/finance.html" class="brand" style="text-decoration: none; display: flex; align-items: center; gap: 0.75rem;">
+      <img src="/assets/zindigi_pitchpoint_logo.svg" alt="Pitch Point Logo" style="height: 38px; width: auto;">
+      <div style="font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 700; color: #fbbf24; letter-spacing: 0.5px;">// FINANCE CONSOLE</div>
+    </a>
+    <div class="nav-actions" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+      <div class="nav-user-badge" id="finUserBadge">
+        <span>👤</span> <span id="finUserName">Head of Finance</span>
+      </div>
+      <a href="/assets/Zindigi_Payment_Forwarder.apk" download class="btn btn-outline btn-sm" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);" title="Download Android Bank Forwarder APK">
+        📲 Forwarder APK
+      </a>
+      <a href="/crux-desk.html" class="btn btn-outline btn-sm" style="color: #00f0d4; border-color: rgba(0, 240, 212, 0.4);">
+        💼 Crux Cash Desk
+      </a>
+      <a href="/ideacrux.html" class="btn btn-outline btn-sm">
+        🌐 Public Portal
+      </a>
+      <a href="/crux-admin.html" class="btn btn-outline btn-sm">
+        🛡️ Venture Admin
+      </a>
+      <button class="btn btn-outline btn-sm" id="btnRefreshFinance">
+        🔄 Refresh
+      </button>
+      <button class="btn btn-outline btn-sm" style="color: #f87171; border-color: rgba(239, 68, 68, 0.4);" onclick="logoutStaff()">
+        Logout
+      </button>
+    </div>
+  </nav>
+
+  <div class="finance-container">
+
+    <!-- Header & Quick Actions -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 style="font-family: var(--font-heading); font-size: 1.8rem; font-weight: 800;">
+          Event Financial Treasury & Cash Balances
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.92rem;">
+          Real-time reconciliation of physical cashier cash, bank receipts, vault reserves, and authorized expenses.
+        </p>
+      </div>
+      <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+        <button class="btn btn-emerald" id="btnOpenExpenseModal" style="height: 46px; font-weight: 700;">
+          ➕ Record New Expense
+        </button>
+      </div>
+    </div>
+
+    <!-- 5 Master Financial Pillars -->
+    <div class="fin-metric-grid">
+      <div class="fin-metric-card" style="border-color: rgba(251, 191, 36, 0.4);">
+        <span class="fin-metric-title">🟡 Cash in Drawers (Unverified)</span>
+        <span class="fin-metric-val" style="color: #fbbf24;" id="valCashDrawers">Rs. 0</span>
+        <span style="font-size: 0.75rem; color: var(--text-muted);" id="lblActiveDrawers">Held by active cashiers</span>
+      </div>
+
+      <div class="fin-metric-card" style="border-color: rgba(16, 185, 129, 0.4);">
+        <span class="fin-metric-title">🟢 Cash in Vault (Approved)</span>
+        <span class="fin-metric-val" style="color: #34d399;" id="valCashVault">Rs. 0</span>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Verified & received by Finance</span>
+      </div>
+
+      <div class="fin-metric-card" style="border-color: rgba(99, 102, 241, 0.4);">
+        <span class="fin-metric-title">💳 Online Bank / Easypaisa</span>
+        <span class="fin-metric-val" style="color: #a5b4fc;" id="valOnlineRevenue">Rs. 0</span>
+        <span style="font-size: 0.75rem; color: var(--text-muted);" id="lblOnlineTickets">0 tickets verified</span>
+      </div>
+
+      <div class="fin-metric-card" style="border-color: rgba(239, 68, 68, 0.4);">
+        <span class="fin-metric-title">💸 Total Expenses</span>
+        <span class="fin-metric-val" style="color: #f87171;" id="valTotalExpenses">Rs. 0</span>
+        <span style="font-size: 0.75rem; color: var(--text-muted);" id="lblExpenseCount">0 entries recorded</span>
+      </div>
+
+      <div class="fin-metric-card" style="border-color: rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.05);">
+        <span class="fin-metric-title">🏆 Net Profit / Surplus</span>
+        <span class="fin-metric-val" style="color: #38bdf8;" id="valNetProfit">Rs. 0</span>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Gross Revenue - Total Costs</span>
+      </div>
+    </div>
+
+    <!-- Master Section 0: Pending Payment Slip Verification Queue -->
+    <div class="glass-panel" style="margin-bottom: 2rem; border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.02);">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.85rem;">
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+            <h2 class="panel-title" style="margin-bottom: 0;">
+              <span>📋</span> Pending Payment Slip Verification Queue
+            </h2>
+            <span class="badge-status badge-unapproved" id="pendingQueueBadge">
+              0 Awaiting Review
+            </span>
+          </div>
+          <p class="panel-subtitle" style="margin-top: 0.25rem;">
+            Inspect uploaded payment screenshots (Zindigi, Easypaisa, Raast). Check stated TRX ID, then approve to generate & issue official digital QR passes.
+          </p>
+        </div>
+
+        <!-- Filter Pills & Search -->
+        <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+          <div style="display: flex; gap: 0.35rem; background: rgba(255,255,255,0.05); padding: 4px; border-radius: 12px; border: 1px solid var(--bg-card-border);">
+            <button type="button" class="btn btn-sm btn-primary" id="btnFilterAll" onclick="setQueueFilter('ALL')">
+              All (<span id="countFilterAll">0</span>)
+            </button>
+            <button type="button" class="btn btn-sm btn-outline" id="btnFilterCrux" onclick="setQueueFilter('IDEACRUX')" style="color: #00f0d4; border-color: rgba(0, 240, 212, 0.3);">
+              💡 Zindigi Prize (<span id="countFilterCrux">0</span>)
+            </button>
+            <button type="button" class="btn btn-sm btn-outline" id="btnFilterFiesta" onclick="setQueueFilter('FIESTA')">
+              🎪 Fiesta (<span id="countFilterFiesta">0</span>)
+            </button>
+          </div>
+          <input type="text" id="queueSearchInput" class="form-control" placeholder="Search name, phone, TRX..." style="width: 220px; height: 38px; font-size: 0.85rem;" oninput="applyQueueSearch()">
+        </div>
+      </div>
+
+      <div id="pendingRequestsContainer">
+        <!-- Injected via finance.js -->
+        <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted);">
+          Loading pending payment slips...
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 1: Live Cashier Drawer Status & Handover Marker -->
+    <div class="glass-panel" style="margin-bottom: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <h2 class="panel-title" style="margin-bottom: 0.2rem;">
+            <span>💼</span> Cashier Desks & Physical Handover Ledger
+          </h2>
+          <p class="panel-subtitle">Monitor exactly how much physical cash each cashier has collected and approve handovers into the vault.</p>
+        </div>
+        <span class="badge" style="background: rgba(255,255,255,0.06); font-size: 0.8rem;" id="shiftSummaryBadge">
+          Loading shifts...
+        </span>
+      </div>
+
+      <div id="drawersListContainer">
+        <!-- Dynamic drawer cards injected here -->
+        <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+          Loading cashier desk drawers...
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Expense Breakdown & Expense Log -->
+    <div class="glass-panel" style="margin-bottom: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <h2 class="panel-title" style="margin-bottom: 0.2rem;">
+            <span>🧾</span> Authorized Event Expenses
+          </h2>
+          <p class="panel-subtitle">All operational spending with categories, receipts, and descriptions.</p>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('btnOpenExpenseModal').click()">
+          ➕ Add Expense
+        </button>
+      </div>
+
+      <div class="admin-table-card" style="padding: 0; background: transparent; border: none;">
+        <table class="admin-table" id="expensesTable">
+          <thead>
+            <tr>
+              <th>Date & Time</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Paid To</th>
+              <th>Recorded By</th>
+              <th>Amount (PKR)</th>
+            </tr>
+          </thead>
+          <tbody id="expensesTbody">
+            <tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading expenses...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Handover Approval Modal -->
+  <div class="modal-overlay" id="approvalModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">✅ Accept Cash Handover</h3>
+        <button class="modal-close" onclick="closeApprovalModal()">✕</button>
+      </div>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        Confirm physical receipt of cash into the event vault.
+      </p>
+
+      <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.25rem; text-align: center;">
+        <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Amount to Transfer into Vault</div>
+        <div style="font-family: var(--font-heading); font-size: 2.2rem; font-weight: 800; color: #34d399;" id="modalApprovalAmount">
+          Rs. 0
+        </div>
+        <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 4px;" id="modalApprovalCashier">
+          Cashier: Ali (Desk 1)
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="approvalNotes">Finance Verification Note</label>
+        <input type="text" id="approvalNotes" class="form-control" placeholder="e.g. Physically counted & verified 35 notes of Rs. 1,000" value="Physically counted and verified">
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+        <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeApprovalModal()">Cancel</button>
+        <button type="button" id="btnConfirmApprove" class="btn btn-emerald" style="flex: 2; height: 48px; font-weight: 700;">
+          Verify & Move to Vault
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Expense Modal -->
+  <div class="modal-overlay" id="expenseModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">➕ Log Event Expense</h3>
+        <button class="modal-close" onclick="closeExpenseModal()">✕</button>
+      </div>
+      <form id="expenseForm" onsubmit="handleExpenseSubmit(event)">
+        <div class="form-group">
+          <label for="expCategory">Expense Category *</label>
+          <select id="expCategory" class="form-control" required style="height: 48px;">
+            <option value="SOUND_STAGE">Sound & Stage Production</option>
+            <option value="DECORATION">Theme & Decoration</option>
+            <option value="REFRESHMENTS">Food & Refreshments</option>
+            <option value="SECURITY">Security & Crowd Management</option>
+            <option value="PRINTING">Wristbands & Printing</option>
+            <option value="PHOTOGRAPHY">Photography & Video</option>
+            <option value="MISCELLANEOUS">Miscellaneous / Operations</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="expAmount">Amount (PKR) *</label>
+            <input type="number" id="expAmount" class="form-control" placeholder="e.g. 5000" min="1" step="0.5" required style="height: 48px;">
+          </div>
+          <div class="form-group">
+            <label for="expPaidTo">Paid To (Vendor / Person)</label>
+            <input type="text" id="expPaidTo" class="form-control" placeholder="e.g. Sound Masters" style="height: 48px;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="expDesc">Description & Purpose</label>
+          <textarea id="expDesc" class="form-control" rows="2" placeholder="Brief note on what this was purchased for..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeExpenseModal()">Cancel</button>
+          <button type="submit" id="btnSubmitExpense" class="btn btn-emerald" style="flex: 2; height: 48px; font-weight: 700;">
+            💾 Save Expense
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- High-Res Slip Zoom Lightbox Modal -->
+  <div class="modal-overlay" id="slipZoomModal" style="z-index: 1050;">
+    <div class="modal-card" style="max-width: 720px; max-height: 94vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="zoomModalTitle">Payment Slip Verification</h3>
+          <div style="font-size: 0.82rem; color: var(--text-muted);" id="zoomModalSub">TRX: Checking...</div>
+        </div>
+        <button class="modal-close" onclick="closeSlipZoomModal()">✕</button>
+      </div>
+
+      <div style="flex: 1; overflow-y: auto; text-align: center; background: #000; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; min-height: 280px; max-height: 52vh; display: flex; align-items: center; justify-content: center;">
+        <img id="zoomSlipImage" src="" alt="Payment Receipt Screenshot" style="max-width: 100%; max-height: 50vh; object-fit: contain; border-radius: 8px;">
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); border: 1px solid var(--bg-card-border); border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Applicant Details</div>
+          <strong style="color: #fff; font-size: 1rem;" id="zoomModalApplicant">Ali Raza</strong>
+          <div style="font-size: 0.82rem; color: var(--text-muted);" id="zoomModalContact">03123456789</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Registration Fee</div>
+          <strong style="color: #34d399; font-size: 1.25rem;" id="zoomModalAmount">Rs. 1,000</strong>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+        <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeSlipZoomModal()">Close</button>
+        <button type="button" class="btn btn-outline" style="color: #f87171; border-color: rgba(239, 68, 68, 0.4); flex: 1;" id="btnZoomReject">
+          ✕ Reject Slip
+        </button>
+        <button type="button" class="btn btn-emerald" style="flex: 2; font-weight: 700;" id="btnZoomApprove">
+          ✓ Approve & Issue Pass
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="finance.js"></script>
+</body>
+</html>

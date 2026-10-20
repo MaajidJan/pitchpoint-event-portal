@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Payment Forwarder — Zindigi Prize</string>
+    <string name="service_active">SYSTEM ACTIVE</string>
+    <string name="service_inactive">PERMISSION REQUIRED</string>
+    <string name="test_payment_btn">⚡ Send Test Zindigi/Raast Webhook</string>
+    <string name="grant_permission_btn">Enable Notification Access</string>
+    <string name="disable_battery_opt_btn">Disable Battery Optimization</string>
+    <string name="clear_logs">Clear Logs</string>
+    <string name="save_settings">Save Webhook Settings</string>
+</resources>

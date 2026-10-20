@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pitchpoint-event-portal",
+  "main": "src/index.ts",
+  "compatibility_date": "2024-09-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "event-db",
+      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+    }
+  ],
+  "ai": {
+    "binding": "AI"
+  },
+  "vars": {
+    "ENVIRONMENT": "production",
+    "WEBHOOK_SECRET": "REPLACE_WITH_YOUR_SECURE_TOKEN",
+    "EASYPAISA_TITLE": "EVENT ORGANIZING COMMITTEE",
+    "EASYPAISA_NUMBER": "03001234567",
+    "GMAIL_ACCOUNT": "event-notifications@example.com"
+  }
+}

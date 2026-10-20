@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <title>On-Spot Startup Desk — Zindigi Prize BSEAS-H11</title>
+  <meta name="theme-color" content="#020b0e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="ideacrux.css">
+  <script>
+    (function() {
+      try {
+        const token = localStorage.getItem('bahria_auth_token');
+        if (!token) {
+          window.location.replace('/login.html?redirect=crux-desk.html');
+        }
+      } catch(e) {
+        window.location.replace('/login.html?redirect=crux-desk.html');
+      }
+    })();
+  </script>
+  <style>
+    .desk-viewport {
+      max-width: 1350px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 4rem;
+    }
+    .drawer-hud {
+      background: rgba(4, 20, 25, 0.75);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      backdrop-filter: blur(12px);
+    }
+    .drawer-stat {
+      display: flex;
+      flex-direction: column;
+    }
+    .drawer-stat-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .drawer-stat-val {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--accent-cyan);
+      margin-top: 2px;
+    }
+    .desk-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+    @media (max-width: 990px) {
+      .desk-grid {
+        grid-template-columns: 1fr;
+      }
+      .drawer-hud {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+    @media (max-width: 680px) {
+      .desk-viewport {
+        padding: 1rem 0.75rem 3rem;
+      }
+      .hud-card {
+        padding: 1.25rem 1rem;
+      }
+      .drawer-stat-val {
+        font-size: 1.35rem;
+      }
+      .tab-pill-btn {
+        padding: 0.5rem 0.3rem;
+        font-size: 0.75rem;
+      }
+      .form-input, .form-select, .form-textarea, input[type="text"], input[type="tel"], input[type="email"] {
+        font-size: 16px !important;
+        min-height: 44px;
+      }
+    }
+    .hud-card {
+      background: rgba(4, 20, 25, 0.6);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      backdrop-filter: blur(16px);
+      position: relative;
+    }
+    .tab-pills-bar {
+      display: flex;
+      gap: 0.4rem;
+      background: rgba(2, 11, 14, 0.7);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-hairline);
+      margin-bottom: 1.5rem;
+    }
+    .tab-pill-btn {
+      flex: 1;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.6rem;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+    }
+    .tab-pill-btn.active {
+      background: var(--accent-cyan);
+      color: var(--bg-abyss);
+    }
+    .team-search-result-card {
+      background: rgba(2, 11, 14, 0.8);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      transition: border-color 0.2s;
+    }
+    .team-search-result-card:hover {
+      border-color: var(--border-active);
+    }
+    .pass-preview-plate {
+      background: #020b0e;
+      border: 2px solid var(--accent-cyan);
+      border-radius: var(--radius-md);
+      padding: 1.75rem 1.25rem;
+      text-align: center;
+      position: relative;
+    }
+    .pass-preview-plate::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: 20px; right: 20px;
+      height: 2px;
+      background: var(--accent-cyan-bright);
+      box-shadow: 0 0 12px var(--accent-cyan);
+    }
+    /* Cashier Sign-in Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 11, 14, 0.9);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-active);
+      border-radius: var(--radius-lg);
+      max-width: 480px;
+      width: 100%;
+      padding: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Telemetry Bar -->
+  <aside class="telemetry-bar">
+    <div class="telemetry-inner">
+      <div class="telemetry-unit">
+        <span class="telemetry-dot" aria-hidden="true"></span>
+        <span class="telemetry-val" style="color: var(--accent-cyan);">DESK: ACTIVE</span>
+      </div>
+      <div class="telemetry-unit">
+        <span class="telemetry-key">MODULE:</span>
+        <span class="telemetry-val">ZINDIGI PRIZE ON-SPOT CASH DESK</span>
+      </div>
+      <div class="telemetry-unit">
+        <span class="telemetry-key">FEE:</span>
+        <span class="telemetry-val" style="color: var(--accent-cyan);">FIXED RS. 1,000 CASH</span>
+      </div>
+      <div class="telemetry-unit" style="margin-left: auto;">
+        <span class="telemetry-key">CASHIER:</span>
+        <span class="telemetry-val" id="deskCashierLabel" style="color: #fff;">Signing in...</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Navigation -->
+  <nav class="crux-nav">
+    <div class="crux-nav-inner">
+      <a href="/crux-desk.html" class="brand-logo-wrap" style="text-decoration: none;">
+        <img src="/assets/zindigi_pitchpoint_logo.svg" alt="Pitch Point Logo" class="brand-logo-img brand-logo-dark brand-logo-desktop" style="height: 38px;">
+        <img src="/assets/zindigi_pitchpoint_logo_light.svg" alt="Pitch Point Logo" class="brand-logo-img brand-logo-light brand-logo-desktop" style="height: 38px;">
+        <!-- Mobile Crisp Brand Badge -->
+        <div class="brand-mobile-lockup">
+          <div class="brand-mobile-emblem">
+            <svg viewBox="0 0 40 40" width="28" height="28" fill="none">
+              <polygon points="20,2 38,11 38,29 20,38 2,29 2,11" fill="#042027" stroke="#00f0d4" stroke-width="2.5"/>
+              <polygon points="20,8 30,14 30,26 20,32 10,26 10,14" fill="#00f0d4" opacity="0.3"/>
+              <path d="M12,13 L28,13 L12,27 L28,27" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="20" cy="20" r="2.5" fill="#00f0d4"/>
+            </svg>
+          </div>
+          <div class="brand-mobile-text">
+            <span class="brand-mobile-title">ZINDIGI PRIZE</span>
+            <span class="brand-mobile-sub">BSEAS-H11</span>
+          </div>
+        </div>
+        <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-cyan); margin-left: 6px; letter-spacing: 0.5px;">// CASHIER DESK</span>
+      </a>
+      <div style="display: flex; gap: 0.6rem; align-items: center; margin-left: auto; flex-wrap: wrap;">
+        <button type="button" class="btn btn-outline-cyan btn-sm" onclick="document.getElementById('deskQrHubModal').classList.add('open')">
+          📱 [QR CODES & RAAST]
+        </button>
+        <button type="button" class="btn btn-outline-cyan btn-sm" id="btnSwitchCashierShift">
+          [SWITCH CASHIER]
+        </button>
+        <button type="button" class="btn btn-sm" style="border: 1px solid rgba(248, 113, 113, 0.4); color: #f87171; background: transparent;" onclick="logoutCashier()">
+          [SIGN OUT]
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="desk-viewport">
+
+    <!-- Active Cash Drawer HUD -->
+    <section class="drawer-hud">
+      <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+        <div class="drawer-stat">
+          <span class="drawer-stat-label">Physical Cash in Drawer</span>
+          <span class="drawer-stat-val" id="drawerCashDisplay">Rs. 0</span>
+        </div>
+        <div class="drawer-stat">
+          <span class="drawer-stat-label">Pitch Passes Issued</span>
+          <span class="drawer-stat-val" style="color: #fff;" id="drawerPassesDisplay">0</span>
+        </div>
+        <div class="drawer-stat">
+          <span class="drawer-stat-label">Desk Counter</span>
+          <span class="drawer-stat-val" style="color: var(--accent-cyan-bright); font-size: 1.15rem; margin-top: 4px;" id="drawerCounterDisplay">Auditorium Entry</span>
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.6rem; align-items: center;">
+        <a href="/scanner.html" target="_blank" class="btn btn-outline-cyan btn-sm">
+          [OPEN GATE SCANNER]
+        </a>
+      </div>
+    </section>
+
+    <!-- Main Desk Workspace Grid -->
+    <div class="desk-grid">
+
+      <!-- Left Column: Search & Walk-in Forms -->
+      <section class="hud-card">
+        <div class="tab-pills-bar">
+          <button type="button" class="tab-pill-btn active" id="tabBtnSearch" onclick="switchDeskTab('SEARCH')">
+            [1. SEARCH & COLLECT RS. 1,000]
+          </button>
+          <button type="button" class="tab-pill-btn" id="tabBtnWalkin" onclick="switchDeskTab('WALKIN')">
+            [2. ON-SPOT WALK-IN REGISTER]
+          </button>
+        </div>
+
+        <!-- 1. Search & Collect Pending Section -->
+        <div id="sectionSearch">
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label">Fast Search Pending Startup Teams</label>
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="text" id="cruxDeskSearchInput" class="form-input" placeholder="Enter Team ID (CRUX-...), Leader WhatsApp, or Startup..." autocomplete="off">
+              <button type="button" class="btn btn-cyan btn-sm" id="btnRunSearch" style="padding: 0 1.25rem;">
+                SEARCH
+              </button>
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-muted); margin-top: 4px;">
+              Live lookup as you type. Collect Rs. 1,000 cash and issue Pitch Pass with 1 click.
+            </div>
+          </div>
+
+          <div id="searchResultsContainer" style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 520px; overflow-y: auto;">
+            <div style="text-align: center; color: var(--text-muted); padding: 3rem 1rem; font-family: var(--font-mono);">
+              Type a mobile number, team name, or team ID above...
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. On-Spot Walk-in Registration Section -->
+        <div id="sectionWalkin" style="display: none;">
+          <form id="cruxWalkinForm" onsubmit="return false;">
+            <div class="form-group">
+              <label class="form-label" for="walkinTeamName">Startup Team Name *</label>
+              <input type="text" id="walkinTeamName" class="form-input" placeholder="e.g. Apex Dynamics" required autocomplete="off">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="walkinLeaderName">Team Leader Full Name *</label>
+                <input type="text" id="walkinLeaderName" class="form-input" placeholder="Leader full name" required autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="walkinLeaderPhone">Leader WhatsApp Mobile *</label>
+                <input type="tel" id="walkinLeaderPhone" class="form-input" placeholder="03XXXXXXXXX" maxlength="11" pattern="^03[0-9]{9}$" required autocomplete="off">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="walkinLeaderDept">Department & Campus *</label>
+                <input type="text" id="walkinLeaderDept" class="form-input" value="Computer Science (BSEAS H-11)" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="walkinLeaderSemester">Semester</label>
+                <input type="text" id="walkinLeaderSemester" class="form-input" value="6th Semester">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="walkinStartupName">Venture / Startup Idea *</label>
+                <input type="text" id="walkinStartupName" class="form-input" placeholder="e.g. AgriSense AI" required autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="walkinStage">Development Stage</label>
+                <select id="walkinStage" class="form-select">
+                  <option value="Idea Stage">Idea Stage (Concept / Research)</option>
+                  <option value="Prototype">Prototype (Wireframe / Alpha)</option>
+                  <option value="Working MVP" selected>Working MVP (Functional Prototype)</option>
+                  <option value="Market Ready">Market Ready (Early Users)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="walkinMember2Name">Co-Founder 2 Name (Optional)</label>
+                <input type="text" id="walkinMember2Name" class="form-input" placeholder="Member 2 full name" autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="walkinMember2Phone">Co-Founder 2 WhatsApp</label>
+                <input type="tel" id="walkinMember2Phone" class="form-input" placeholder="03XXXXXXXXX" maxlength="11" pattern="^03[0-9]{9}$" autocomplete="off">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="walkinDeckUrl">Pitch Deck Link / Drive URL (Optional)</label>
+              <input type="url" id="walkinDeckUrl" class="form-input" placeholder="https://drive.google.com/..." autocomplete="off">
+            </div>
+
+            <div style="background: rgba(0, 240, 212, 0.08); border: 1px dashed var(--border-active); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.25rem; display: flex; gap: 12px; align-items: center;">
+              <span style="font-family: var(--font-mono); font-size: 1.3rem; color: var(--accent-cyan);">[FEE]</span>
+              <div style="font-size: 0.85rem; color: #cbd5e1;">
+                Confirm physical collection of exactly <strong style="color: var(--accent-cyan);">Rs. 1,000 cash</strong> from the team leader. Turnstile Pitch Pass will be generated immediately.
+              </div>
+            </div>
+
+            <button type="button" id="btnSubmitWalkinPass" class="btn btn-cyan btn-full" style="padding: 0.95rem; font-size: 1rem; letter-spacing: 0.5px;">
+              [COLLECT RS. 1,000 CASH & GENERATE PITCH PASS]
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Right Column: Live Pass Preview & Instant Actions -->
+      <section>
+        <div class="hud-card" id="issuedPassCardContainer" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <span style="font-family: var(--font-mono); color: #34d399; font-weight: 700; font-size: 0.85rem;">
+              ✓ PASS ISSUED // VERIFIED
+            </span>
+            <span id="passReceiptBadge" style="font-family: var(--font-mono); background: rgba(0, 240, 212, 0.15); border: 1px solid var(--border-active); color: var(--accent-cyan); padding: 2px 8px; border-radius: 4px; font-size: 0.78rem;">
+              CSH-CRUX-0001
+            </span>
+          </div>
+
+          <!-- Pass Plate Frame -->
+          <div class="pass-preview-plate">
+            <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-cyan); letter-spacing: 1px;">
+              ZINDIGI PRIZE ON-CAMPUS ROUND // BSEAS H-11
+            </div>
+            <h3 id="issuedTeamName" style="font-family: var(--font-display); color: #fff; font-size: 1.45rem; margin-top: 4px; text-transform: uppercase;">-</h3>
+            <div id="issuedStartupName" style="color: var(--accent-cyan); font-size: 0.92rem; font-weight: 700;">-</div>
+
+            <div style="margin: 1.25rem auto; width: 180px; height: 180px; background: #fff; padding: 8px; border-radius: 8px;">
+              <img id="issuedPassQrImg" src="" alt="Turnstile QR" style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
+
+            <div style="font-family: var(--font-mono); font-size: 0.9rem; color: #fff; font-weight: 700;">
+              PASS ID: <span id="issuedPassId" style="color: var(--accent-cyan);">-</span>
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">
+              Leader: <strong id="issuedLeaderName" style="color: #cbd5e1;">-</strong>
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--accent-cyan-dim); margin-top: 4px;">
+              STAGE GATE: AL-BERUNI AUDITORIUM • 15 OCT 2026
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.6rem; margin-top: 1.25rem; flex-wrap: wrap;">
+            <button type="button" class="btn btn-cyan btn-sm" id="btnDownloadPassPng" style="flex: 1;">
+              DOWNLOAD PNG
+            </button>
+            <button type="button" class="btn btn-outline-cyan btn-sm" id="btnSharePassWa" style="flex: 1;">
+              SEND WHATSAPP
+            </button>
+            <button type="button" class="btn btn-outline-cyan btn-sm" id="btnPrintPass" style="flex: 1;">
+              PRINT PASS
+            </button>
+          </div>
+
+          <button type="button" class="btn btn-outline-cyan btn-full" id="btnNextTeam" style="margin-top: 1rem; padding: 0.75rem;">
+            [+ NEXT TEAM / CLEAR]
+          </button>
+        </div>
+
+        <!-- Placeholder when idle -->
+        <div class="hud-card" id="passEmptyPlaceholder" style="text-align: center; padding: 3.5rem 1.5rem;">
+          <div style="font-family: var(--font-mono); font-size: 2.5rem; color: var(--accent-cyan); margin-bottom: 0.5rem;">
+            [PASS]
+          </div>
+          <h3 style="font-family: var(--font-display); color: #fff;">Turnstile Generator Ready</h3>
+          <p style="color: var(--text-muted); font-size: 0.86rem; margin-top: 6px; font-family: var(--font-mono);">
+            Search a team or register walk-in founders on the left. The official scannable Turnstile Pitch Pass will render here.
+          </p>
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- Cashier Shift Login Modal -->
+  <div class="modal-overlay" id="cashierShiftModal">
+    <div class="modal-card">
+      <div style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.5rem;">
+        [SECURITY CHECKPOINT]
+      </div>
+      <h3 style="font-family: var(--font-display); color: #fff; font-size: 1.4rem; margin-bottom: 0.5rem;">
+        Cashier Desk Sign-in
+      </h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        Enter your operator name and desk counter to open your physical cash drawer shift:
+      </p>
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label" for="shiftCashierName">Your Name *</label>
+        <input type="text" id="shiftCashierName" class="form-input" placeholder="e.g. Hamza / Huzaifa" required>
+      </div>
+      <div class="form-group" style="margin-bottom: 1.25rem;">
+        <label class="form-label" for="shiftCounterLocation">Counter Location *</label>
+        <select id="shiftCounterLocation" class="form-select">
+          <option value="Auditorium Entry Desk">Auditorium Entry Desk</option>
+          <option value="Main Gate Desk">BSEAS Main Gate Desk</option>
+          <option value="Incubation Center Desk">BIC Incubation Desk</option>
+        </select>
+      </div>
+      <button type="button" class="btn btn-cyan btn-full" id="btnStartShift" style="padding: 0.85rem;">
+        [OPEN CASH DRAWER & START SHIFT]
+      </button>
+    </div>
+  </div>
+
+  <!-- QR Hub Modal for Cashier Desk (Terminal Access QR & Official Raast Payment Card) -->
+  <div class="modal-overlay" id="deskQrHubModal">
+    <div class="modal-card" style="max-width: 620px; text-align: center;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="font-family: var(--font-display); color: #fff; font-size: 1.3rem;">📱 Desk Terminal & Raast Payment QRs</h3>
+        <button type="button" class="btn btn-sm btn-outline-cyan" onclick="document.getElementById('deskQrHubModal').classList.remove('open')">✕</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+        <!-- 1. Cashier Desk QR -->
+        <div style="background: rgba(2, 11, 14, 0.8); border: 1px solid rgba(251, 191, 36, 0.4); border-radius: 12px; padding: 1.2rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.75rem; color: #fbbf24; font-weight: 700; margin-bottom: 0.5rem;">
+            💼 DESK TERMINAL LINK
+          </div>
+          <div style="background: #fff; padding: 6px; border-radius: 10px; display: inline-block; margin-bottom: 0.5rem;">
+            <img src="/assets/qr_cashier_desk.svg" alt="Cashier Desk QR" style="width: 140px; height: 140px; display: block;">
+          </div>
+          <div style="font-size: 0.78rem; color: var(--text-muted);">Scan to open Cashier Desk on phone/tablet</div>
+        </div>
+
+        <!-- 2. Zindigi / Raast Payment Card -->
+        <div style="background: rgba(2, 11, 14, 0.8); border: 1px solid var(--border-active); border-radius: 12px; padding: 1.2rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.5rem;">
+            ⚡ ZINDIGI / RAAST (RS. 1,000)
+          </div>
+          <div style="background: #fff; padding: 4px; border-radius: 10px; display: inline-block; margin-bottom: 0.5rem;">
+            <img src="/assets/zindigi_payment_qr.jpg" alt="Zindigi Payment Card" style="width: 140px; height: 140px; object-fit: contain; display: block;">
+          </div>
+          <div style="font-size: 0.78rem; color: #fff; font-weight: 600;">Muhammad Huzaifa</div>
+          <div style="font-size: 0.72rem; color: var(--text-muted);">0329 2092724 (Raast)</div>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-cyan btn-full" onclick="document.getElementById('deskQrHubModal').classList.remove('open')">
+        [CLOSE]
+      </button>
+    </div>
+  </div>
+
+  <!-- Hidden Canvas for Pitch Pass Generation & PNG Download -->
+  <canvas id="deskTicketCanvas" width="900" height="520" style="display: none;"></canvas>
+
+  <script src="crux-desk.js"></script>
+</body>
+</html>

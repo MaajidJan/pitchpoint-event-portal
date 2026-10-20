@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zindigi Prize BSEAS-H11 | Official Pitch Portal</title>
+  <meta name="description" content="Zindigi Prize BSEAS-H11: Campus Round of the Zindigi Prize by JS Bank at Bahria University BSEAS H-11 Campus. Pitch your venture, win PKR 30,000 cash prize, and qualify for National Finals.">
+  <link rel="stylesheet" href="/ideacrux.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23020b0e'/><circle cx='50' cy='50' r='30' stroke='%2300f0d4' stroke-width='8' fill='none'/><path d='M35 50L65 50' stroke='%2300f0d4' stroke-width='8'/></svg>">
+  <script>
+    (function() {
+      const theme = localStorage.getItem('crux_theme') || 'dark';
+      if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Registration Closed Sticky Announcement Banner -->
+  <div id="regClosedBanner" style="display: none; background: linear-gradient(90deg, #7f1d1d 0%, #b91c1c 50%, #7f1d1d 100%); color: #fff; padding: 10px 1rem; font-family: var(--font-mono); font-size: 0.88rem; font-weight: 800; text-align: center; position: sticky; top: 0; z-index: 10000; box-shadow: 0 4px 20px rgba(185, 28, 28, 0.6); border-bottom: 2px solid #ef4444;">
+    <div style="max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
+      <span style="background: rgba(0, 0, 0, 0.4); padding: 2px 10px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.4); font-size: 0.78rem;">⚠️ DEADLINE NOTICE</span>
+      <span style="letter-spacing: 0.5px; text-transform: uppercase;">REGISTRATIONS ARE OFFICIALLY CLOSED (Deadline: 14 Oct, 11:59 PM PKT)</span>
+      <span id="gracePeriodNotice" style="display: none; background: #fbbf24; color: #020b0e; font-size: 0.74rem; font-weight: 900; padding: 2px 8px; border-radius: 4px;">⏳ IN-FLIGHT GRACE WINDOW ACTIVE</span>
+    </div>
+  </div>
+
+  <!-- Telemetry HUD Bar -->
+  <div class="telemetry-bar">
+    <div class="telemetry-tag">
+      <div class="telemetry-pulse"></div>
+      <span>BAHRIA UNIVERSITY BSEAS H-11</span>
+      <span style="opacity: 0.3;">/</span>
+      <span>ZINDIGI PRIZE BY JS BANK</span>
+    </div>
+    <div class="telemetry-tag">
+      <span>COORD: 33.6844° N, 73.0479° E</span>
+      <span style="opacity: 0.3;">/</span>
+      <span class="telemetry-coords">STATUS: DOSSIERS OPEN</span>
+    </div>
+  </div>
+
+  <!-- Header / Navbar -->
+  <header class="site-header">
+    <nav class="navbar">
+      <a href="/ideacrux.html" class="brand-logo-wrap" title="Zindigi Prize BSEAS-H11">
+        <!-- Desktop Full Logo -->
+        <img src="/assets/zindigi_pitchpoint_logo.svg" alt="Zindigi Prize BSEAS-H11 Logo" class="brand-logo-img brand-logo-desktop brand-logo-dark">
+        <img src="/assets/zindigi_pitchpoint_logo_light.svg" alt="Zindigi Prize BSEAS-H11 Logo" class="brand-logo-img brand-logo-desktop brand-logo-light">
+        
+        <!-- Mobile Crisp Brand Badge (Solves Mobile Logo Squeeze) -->
+        <div class="brand-mobile-lockup">
+          <div class="brand-mobile-emblem">
+            <svg viewBox="0 0 40 40" width="28" height="28" fill="none">
+              <polygon points="20,2 38,11 38,29 20,38 2,29 2,11" fill="#042027" stroke="#00f0d4" stroke-width="2.5"/>
+              <polygon points="20,8 30,14 30,26 20,32 10,26 10,14" fill="#00f0d4" opacity="0.3"/>
+              <path d="M12,13 L28,13 L12,27 L28,27" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="20" cy="20" r="2.5" fill="#00f0d4"/>
+            </svg>
+          </div>
+          <div class="brand-mobile-text">
+            <span class="brand-mobile-title">ZINDIGI PRIZE</span>
+            <span class="brand-mobile-sub">BSEAS-H11</span>
+          </div>
+        </div>
+      </a>
+
+      <div class="nav-actions">
+        <button id="cruxThemeToggleBtn" class="theme-toggle-pill" onclick="toggleCruxTheme()" title="Switch Light / Dark Theme" aria-label="Toggle Theme">
+          <span class="theme-icon">☀️</span>
+          <span class="theme-text">Light Mode</span>
+        </button>
+        <button class="btn btn-outline-cyan btn-sm btn-nav-qr" onclick="openPublicQrModal()" title="Scan QR Code to open on mobile" aria-label="QR Code">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <span class="btn-text-full">Scan / Share QR</span>
+          <span class="btn-text-short">QR</span>
+        </button>
+        <button class="btn btn-outline-cyan btn-sm btn-nav-status" onclick="openCruxStatusModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span class="btn-text-full">Check Team Status</span>
+          <span class="btn-text-short">Status</span>
+        </button>
+        <button class="btn btn-cyan btn-sm btn-register-main" onclick="openCruxRegisterModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span class="btn-text-full">Register Team (Rs. 1,000)</span>
+          <span class="btn-text-short">Register</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Live Pitch Stage Broadcast Tracker (Audience & Founders Standby) -->
+  <section id="livePitchStageSection" style="max-width: 1400px; margin: 1.25rem auto 0.5rem auto; padding: 0 1.5rem;">
+    <div style="background: linear-gradient(135deg, rgba(3, 31, 38, 0.95), rgba(2, 11, 14, 0.98)); border: 1.5px solid var(--accent-cyan); border-radius: var(--radius-lg); padding: 1.15rem 1.6rem; box-shadow: 0 10px 30px rgba(0, 240, 212, 0.15); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="width: 12px; height: 12px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 12px #ef4444; display: inline-block;"></span>
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 0.72rem; color: #ef4444; font-weight: 800; letter-spacing: 1px;">🔴 LIVE STAGE BROADCAST // AL-BERUNI AUDITORIUM</div>
+          <div style="font-family: var(--font-display); font-size: 1.1rem; color: #fff; font-weight: 700; margin-top: 1px;" id="pubStageStatusText">Pitch In Progress</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1.25rem; flex-wrap: wrap; align-items: center;">
+        <!-- Currently Presenting -->
+        <div style="background: rgba(0, 240, 212, 0.08); border: 1px solid rgba(0, 240, 212, 0.35); padding: 8px 16px; border-radius: 8px; min-width: 220px;">
+          <div style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--accent-cyan); text-transform: uppercase; font-weight: 800;">🎤 PRESENTING NOW:</div>
+          <div style="font-size: 1rem; font-weight: 800; color: #fff; margin-top: 2px;" id="pubStageCurrentTeam">Awaiting Pitch Session...</div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);" id="pubStageCurrentStage">Al-Beruni Stage Grid</div>
+        </div>
+
+        <!-- Next Up in Queue -->
+        <div style="background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.35); padding: 8px 16px; border-radius: 8px; min-width: 220px;">
+          <div style="font-family: var(--font-mono); font-size: 0.68rem; color: #c084fc; text-transform: uppercase; font-weight: 800;">⏭️ NEXT UP IN QUEUE:</div>
+          <div style="font-size: 1rem; font-weight: 800; color: #fff; margin-top: 2px;" id="pubStageNextTeam">Standing By...</div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);" id="pubStageNextStage">Next on Deck</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hero Section: Asymmetric Cyber-Architectural -->
+  <section class="hero-section">
+    <div class="hero-editorial">
+      <div class="editorial-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <span>Campus Round • Zindigi Prize by JS Bank • BSEAS H-11</span>
+      </div>
+
+      <div class="hero-motto">Where Bold Ideas Break Through.</div>
+
+      <h1 class="hero-headline">
+        PITCH <span class="monolith-cut">POINT</span>
+      </h1>
+
+      <p class="hero-narrative">
+        One idea. One moment. One chance to be remembered. Think different. Speak bolder. Make your mark at <strong>Al-Beruni Auditorium</strong>. Present your solution to industry founders, venture mentors, and secure your team's berth in the <strong>National Grand Finale</strong>.
+      </p>
+
+      <!-- Key Telemetry Strip -->
+      <div class="hero-telemetry-strip">
+        <div class="telemetry-cell">
+          <span class="telemetry-cell-label">Winning Purse</span>
+          <span class="telemetry-cell-value highlight">PKR 30,000</span>
+        </div>
+        <div class="telemetry-cell">
+          <span class="telemetry-cell-label">Pitch Day</span>
+          <span class="telemetry-cell-value">15 OCT 2026</span>
+        </div>
+        <div class="telemetry-cell">
+          <span class="telemetry-cell-label">Arena Venue</span>
+          <span class="telemetry-cell-value">Al-Beruni</span>
+        </div>
+        <div class="telemetry-cell">
+          <span class="telemetry-cell-label">Registration</span>
+          <span class="telemetry-cell-value highlight">Rs. 1,000</span>
+        </div>
+      </div>
+
+      <div class="hero-cta-cluster">
+        <button class="btn btn-cyan btn-lg" onclick="openCruxRegisterModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          Register Startup Team Now
+        </button>
+        <button class="btn btn-outline-cyan btn-lg" onclick="openCruxStatusModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          Lookup Team Pitch Pass
+        </button>
+      </div>
+    </div>
+
+    <!-- Right: Dual Poster Showcase with Interactive Mode Switcher -->
+    <div class="hero-posters-wrapper">
+      <div class="poster-tabs-bar">
+        <button id="posterTabDark" class="poster-tab-btn active" onclick="switchHeroPoster('dark')">
+          <span class="tab-dot"></span>
+          <span>Breakthrough Core</span>
+          <span class="tab-tag">DARK</span>
+        </button>
+        <button id="posterTabPortal" class="poster-tab-btn" onclick="switchHeroPoster('portal')">
+          <span class="tab-dot"></span>
+          <span>The Arena Portal</span>
+          <span class="tab-tag">LIGHT</span>
+        </button>
+      </div>
+
+      <div class="hero-monolith-card" id="heroPosterCard" onclick="openActiveHeroPosterModal()">
+        <img id="heroPosterImg" src="/assets/pitch_point_poster_dark.jpg" alt="Pitch Point Official Poster" class="hero-poster-image">
+        <div class="hero-monolith-hud">
+          <div class="hud-location">
+            <span id="hudPosterTitle">Where Bold Ideas Break Through</span>
+            <small id="hudPosterMeta">PITCH POINT 2026 • Crystalline Monolith Edition</small>
+          </div>
+          <div class="hud-trigger-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            Inspect / Zoom
+          </div>
+        </div>
+      </div>
+
+      <div class="poster-quick-actions">
+        <span class="poster-actions-label">OFFICIAL ARTWORK:</span>
+        <div class="poster-chips-cluster">
+          <button class="poster-chip-btn" onclick="openPosterPreviewModal('/assets/pitch_point_poster_dark.jpg', 'PITCH POINT — Poster 1 (Breakthrough Core)')">
+            💎 Poster 1 (Dark)
+          </button>
+          <button class="poster-chip-btn" onclick="openPosterPreviewModal('/assets/pitch_point_poster_portal.jpg', 'PITCH POINT — Poster 2 (Arena Portal)')">
+            🏛️ Poster 2 (Portal)
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Asymmetric Bento Dossier Grid -->
+  <section class="dossier-section">
+    <div class="section-editorial-header">
+      <div class="section-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        Venture Dossier & Specifications
+      </div>
+      <h2 class="section-heading">Built For Real Founders. Judged On Tangible Impact.</h2>
+      <p class="section-desc">
+        At Zindigi Prize BSEAS-H11, we discard slide-deck fluff. Present defensible startup economics, technical validity, and execution capability directly to seasoned judges.
+      </p>
+    </div>
+
+    <div class="bento-dossier-grid">
+      
+      <!-- Bento Hero Cell: The Stakes & National Incubation -->
+      <div class="bento-card bento-card-hero">
+        <div>
+          <div class="bento-header-row">
+            <span class="editorial-badge">STAGE AWARD</span>
+            <span style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent-cyan);">FINALS BERTH</span>
+          </div>
+
+          <h3 class="bento-cell-title">Top Team Championship Prize</h3>
+          <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.55;">
+            The winning team from Bahria University BSEAS H-11 secures the campus championship crown and advances into the JS Bank Zindigi Prize National Accelerator program.
+          </p>
+
+          <div class="bento-kpi-block">
+            <div class="bento-kpi-title">Grand Winner Cash Purse</div>
+            <div class="bento-kpi-num">PKR 30,000/-</div>
+            <div class="bento-kpi-sub">Direct grant funding + National Grand Finale Trophy & Incubation</div>
+          </div>
+
+          <div class="perks-checklist">
+            <div class="checklist-item">
+              <div class="checklist-check">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+              <div>National Grand Finale Qualification</div>
+            </div>
+            <div class="checklist-item">
+              <div class="checklist-check">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+              <div>1-on-1 Venture Mentorship</div>
+            </div>
+            <div class="checklist-item">
+              <div class="checklist-check">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+              <div>Direct Investor & VC Exposure</div>
+            </div>
+            <div class="checklist-item">
+              <div class="checklist-check">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+              <div>Digital Turnstile Pitch Pass</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+          <button class="btn btn-cyan btn-sm" onclick="openCruxRegisterModal()" style="width: 100%;">
+            Register Your Team For The Title →
+          </button>
+        </div>
+      </div>
+
+      <!-- Bento Cell 2: Eligibility Rules -->
+      <div class="bento-card">
+        <div>
+          <div class="bento-header-row">
+            <div class="bento-icon-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-cyan);">SPEC // ELIGIBILITY</span>
+          </div>
+
+          <h3 class="bento-cell-title">Team Roster Protocol</h3>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">
+            Designed exclusively for visionary students enrolled at Bahria University BSEAS H-11 Campus.
+          </p>
+
+          <div class="bento-spec-list">
+            <div class="bento-spec-row">
+              <span class="bento-spec-key">Team Size</span>
+              <span class="bento-spec-val">Min 2 &bull; Max 3 Members</span>
+            </div>
+            <div class="bento-spec-row">
+              <span class="bento-spec-key">Campus Filter</span>
+              <span class="bento-spec-val">BSEAS H-11 Exclusive</span>
+            </div>
+            <div class="bento-spec-row">
+              <span class="bento-spec-key">Startup Stages</span>
+              <span class="bento-spec-val">Idea / MVP / Prototype</span>
+            </div>
+            <div class="bento-spec-row">
+              <span class="bento-spec-key">Pitch Deck</span>
+              <span class="bento-spec-val">Optional but Recommended</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bento Cell 3: Escrow & Reconciliation Details -->
+      <div class="bento-card">
+        <div>
+          <div class="bento-header-row">
+            <div class="bento-icon-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-cyan);">ESCROW // ZINDIGI & RAAST</span>
+          </div>
+
+          <h3 class="bento-cell-title">Entry Fee & Reconciliation</h3>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">
+            Unified registration fee covers the complete team pass and evaluation slot.
+          </p>
+
+          <div class="bento-spec-list">
+            <div class="bento-spec-row">
+              <span class="bento-spec-key">Team Entry Fee</span>
+              <span class="bento-spec-val" style="color: var(--accent-cyan);">Rs. 1,000/- Total</span>
+            </div>
+            <div class="bento-spec-row">
+              <span class="bento-spec-key">Account Title</span>
+              <span class="bento-spec-val">Muhammad Huzaifa</span>
+            </div>
+            <div class="bento-spec-row">
+              <span class="bento-spec-key">Account / Raast</span>
+              <span class="bento-spec-val">0329 2092724</span>
+            </div>
+            <div class="bento-spec-row">
+              <span class="bento-spec-key">IBAN</span>
+              <span class="bento-spec-val" style="font-size: 0.78rem;">PK43JSBL9999903292092724</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Chronological Stage Gates -->
+  <section class="gates-section">
+    <div class="section-editorial-header">
+      <div class="section-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        Execution Protocol
+      </div>
+      <h2 class="section-heading">The 4 Gates To The Monolith Stage</h2>
+      <p class="section-desc">From initial roster filing to the live pitch before industry judges.</p>
+    </div>
+
+    <div class="gates-strip">
+      <div class="gate-card">
+        <span class="gate-index">GATE 01</span>
+        <h4 class="gate-title">Roster Assembly</h4>
+        <p class="gate-desc">
+          Form your 2 to 3 member startup team. Designate the Team Leader and document department & semester details.
+        </p>
+      </div>
+
+      <div class="gate-card">
+        <span class="gate-index">GATE 02</span>
+        <h4 class="gate-title">Venture Abstract</h4>
+        <p class="gate-desc">
+          Outline the real-world friction point, the affected market, current startup maturity (Idea/MVP), and revenue logic.
+        </p>
+      </div>
+
+      <div class="gate-card">
+        <span class="gate-index">GATE 03</span>
+        <h4 class="gate-title">Escrow Settlement</h4>
+        <p class="gate-desc">
+          Transfer Rs. 1,000 via Zindigi / Raast / Any Bank to <strong>0329 2092724 (Muhammad Huzaifa)</strong>. Submit the TRX ID or upload the slip.
+        </p>
+      </div>
+
+      <div class="gate-card">
+        <span class="gate-index">GATE 04</span>
+        <h4 class="gate-title">Live Stage Pitch</h4>
+        <p class="gate-desc">
+          Download your verified digital QR Pitch Pass. Check in at Al-Beruni Auditorium on 15 Oct 2026 and pitch for the PKR 30K title.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technical Registration Dossier Modal -->
+  <div id="cruxRegisterModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div>
+          <h3>Register Startup Dossier</h3>
+          <div style="font-size: 0.72rem; color: var(--accent-cyan); font-family: var(--font-mono); letter-spacing: 0.5px;">
+            ZINDIGI PRIZE ON-CAMPUS ROUND &bull; BSEAS H-11
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeCruxRegisterModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <form id="cruxRegisterForm">
+
+          <!-- 1. Eligibility Check -->
+          <div class="form-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+            01 // Campus Eligibility Verification
+          </div>
+
+          <div style="background: rgba(0, 240, 212, 0.08); border: 1px solid var(--border-active); border-radius: var(--radius-md); padding: 0.9rem 1.15rem; margin-bottom: 1.25rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20" style="color: var(--accent-cyan); flex-shrink: 0; margin-top: 2px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <div>
+              <div style="color: #fff; font-weight: 700; font-size: 0.88rem; letter-spacing: 0.3px;">Exclusively for Bahria University (BSEAS H-11 Campus) Students</div>
+              <div style="color: var(--text-muted); font-size: 0.78rem; margin-top: 3px; line-height: 1.45;">
+                All team members must be enrolled students of Bahria University BSEAS H-11. External applicants are strictly not allowed.
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Team Information -->
+          <div class="form-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+            02 // Team Roster & Contact
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Team Name <span class="req">*</span></label>
+            <input type="text" id="cruxTeamName" class="form-input" placeholder="e.g. Nexus Innovations" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Team Members Count <span class="req">*</span></label>
+            <div class="radio-cards-group">
+              <label class="radio-card">
+                <input type="radio" name="membersCount" value="2" checked>
+                <div class="radio-card-content">2 Members</div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="membersCount" value="3">
+                <div class="radio-card-content">3 Members</div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Team Leader Name <span class="req">*</span></label>
+              <input type="text" id="cruxLeaderName" class="form-input" placeholder="e.g. Usman Ali" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Leader WhatsApp Number <span class="req">*</span></label>
+              <input type="tel" id="cruxLeaderPhone" class="form-input" placeholder="03XXXXXXXXX" maxlength="11" pattern="^03[0-9]{9}$" required>
+              <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 3px;">11-digit Pakistani mobile (e.g. 03292092724)</div>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Leader Gmail Address <span class="req">*</span></label>
+              <input type="email" id="cruxLeaderEmail" class="form-input" placeholder="e.g. usman@gmail.com" pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$" required>
+              <div style="font-size: 0.72rem; color: var(--accent-cyan); margin-top: 3px;">Google Gmail (@gmail.com) required</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Department & Year <span class="req">*</span></label>
+              <input type="text" id="cruxLeaderDept" class="form-input" placeholder="e.g. CS, 3rd Year" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Semester & Section</label>
+            <input type="text" id="cruxLeaderSemester" class="form-input" placeholder="e.g. 6th Semester (Sec A)">
+          </div>
+
+          <!-- Member 2 -->
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Member 2 Name <span class="req">*</span></label>
+              <input type="text" id="cruxMember2Name" class="form-input" placeholder="e.g. Sarah Khan" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Member 2 WhatsApp <span class="req">*</span></label>
+              <input type="tel" id="cruxMember2Phone" class="form-input" placeholder="03XXXXXXXXX" maxlength="11" pattern="^03[0-9]{9}$" required>
+              <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 3px;">11-digit Pakistani mobile (03XXXXXXXXX)</div>
+            </div>
+          </div>
+
+          <!-- Member 3 (Conditional) -->
+          <div id="member3FieldsSection" style="display: none;">
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Member 3 Name</label>
+                <input type="text" id="cruxMember3Name" class="form-input" placeholder="e.g. Hamza Malik">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Member 3 WhatsApp</label>
+                <input type="tel" id="cruxMember3Phone" class="form-input" placeholder="03XXXXXXXXX" maxlength="11" pattern="^03[0-9]{9}$">
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 3px;">11-digit Pakistani mobile (03XXXXXXXXX)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Startup Details -->
+          <div class="form-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+            03 // Venture Abstract & Economics
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Startup / Project Name <span class="req">*</span></label>
+            <input type="text" id="cruxStartupName" class="form-input" placeholder="e.g. AgriSense AI" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Brief Description of Your Idea (100–200 words) <span class="req">*</span></label>
+            <textarea id="cruxIdeaDescription" class="form-textarea" placeholder="Detail the core mechanics of your startup, tech stack, or customer proposition..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Real-World Problem & Affected Population <span class="req">*</span></label>
+            <textarea id="cruxProblemStatement" class="form-textarea" placeholder="Identify the core friction point, market deficit, or societal challenge being solved..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Current Venture Maturity Bracket <span class="req">*</span></label>
+            <select id="cruxStartupStage" class="form-select" required>
+              <option value="Idea Stage" selected>💡 Bracket A: Idea Stage (Concept & Ideation)</option>
+              <option value="Prototype">🛠️ Bracket B: Prototype (Wireframe / Prototype in Progress)</option>
+              <option value="Working MVP">⚡ Bracket C: Working MVP (Functional Beta Product)</option>
+              <option value="Market Ready">🚀 Bracket D: Market Ready (Launched / Generating Revenue)</option>
+            </select>
+            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 3px;">Startups will be grouped, scheduled, and evaluated within their assigned venture maturity bracket.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Revenue & Monetization Model</label>
+            <textarea id="cruxRevenueModel" class="form-textarea" placeholder="e.g. B2B enterprise SaaS, transaction take-rate, marketplace commission, hardware margin..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Pitch Deck Ready? <span class="req">*</span></label>
+            <div class="radio-cards-group">
+              <label class="radio-card">
+                <input type="radio" name="pitchDeckReady" value="Yes" checked>
+                <div class="radio-card-content">Yes, Pitch Deck Ready</div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="pitchDeckReady" value="No">
+                <div class="radio-card-content">Drafting / In Progress</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- 4. Payment Details -->
+          <div class="form-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+            04 // Escrow Settlement (Rs. 1,000)
+          </div>
+
+          <div class="payment-info-box">
+            <div class="payment-info-header">
+              <span>Zindigi (JS Bank) / Raast Escrow</span>
+              <span style="color: var(--accent-cyan); font-family: var(--font-mono); font-weight: 800;">Rs. 1,000/-</span>
+            </div>
+            <div class="payment-row">
+              <span class="label">Bank / Service:</span>
+              <span class="val">Zindigi (Powered by JS Bank) / Raast</span>
+            </div>
+            <div class="payment-row">
+              <span class="label">Account Title:</span>
+              <span class="val">Muhammad Huzaifa</span>
+            </div>
+            <div class="payment-row">
+              <span class="label">Account Number / Raast ID:</span>
+              <span class="val" style="color: var(--accent-cyan); font-size: 1.05rem; font-weight: 700;">0329 2092724</span>
+            </div>
+            <div class="payment-row">
+              <span class="label">IBAN:</span>
+              <span class="val" style="font-family: var(--font-mono); font-size: 0.8rem; word-break: break-all;">PK43JSBL9999903292092724</span>
+            </div>
+
+            <!-- Visual QR Poster Card with Click to Zoom -->
+            <div style="background: rgba(1, 10, 13, 0.9); border: 1px solid var(--border-active); border-radius: 8px; padding: 0.75rem; margin: 0.85rem 0; text-align: center;">
+              <div style="font-size: 0.72rem; color: var(--accent-cyan); font-family: var(--font-mono); margin-bottom: 6px; letter-spacing: 0.5px;">
+                OFFICIAL ZINDIGI & RAAST QR CODE
+              </div>
+              <img src="/assets/zindigi_payment_qr.jpg" alt="Zindigi Payment QR" style="max-height: 180px; width: auto; border-radius: 6px; cursor: pointer; border: 1px solid rgba(0, 240, 212, 0.3); transition: transform 0.2s;" onclick="openPosterPreviewModal('/assets/zindigi_payment_qr.jpg', 'Official Zindigi & Raast Payment QR')">
+              <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">
+                🔍 Tap QR image to view full screen & scan via Zindigi, Raast, EasyPaisa, JazzCash, Nayapay, or ANY banking app
+              </div>
+            </div>
+
+            <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.45;">
+              Transfer <strong>Rs. 1,000</strong> to the account above or scan the Raast QR. Attach your payment receipt screenshot below (required for verification).
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 1rem;">
+            <label class="form-label">Payment Receipt Screenshot <span class="req">*</span></label>
+            <input type="file" id="cruxSlipFile" class="form-input" accept="image/*" required>
+            <div style="font-size: 0.72rem; color: var(--accent-cyan); margin-top: 3px;">Mandatory: attach screenshot of payment slip (PNG, JPG, or WebP)</div>
+          </div>
+
+          <div id="cruxSlipPreviewContainer" style="display: none; margin-bottom: 1rem; text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">Receipt Preview:</div>
+            <img id="cruxSlipPreviewImg" src="" alt="Slip Preview" style="max-height: 140px; border-radius: 8px; border: 1px solid var(--border-active);">
+          </div>
+
+          <div style="margin-top: 1.5rem;">
+            <button type="submit" id="btnSubmitCruxRegister" class="btn btn-cyan btn-lg" style="width: 100%;">
+              Submit Startup Registration Dossier
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status & Pitch Pass Modal -->
+  <div id="cruxStatusModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div>
+          <h3>Team Status & Pitch Pass</h3>
+          <div style="font-size: 0.72rem; color: var(--accent-cyan); font-family: var(--font-mono); letter-spacing: 0.5px;">
+            ZINDIGI PRIZE BSEAS-H11 VERIFICATION
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeCruxStatusModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <form onsubmit="handleCruxLookupSubmit(event)" style="margin-bottom: 1.5rem;">
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="cruxLookupInput" class="form-input" placeholder="Enter Team ID (CRUX-...) or Leader Phone" required>
+            <button type="submit" class="btn btn-cyan">
+              Search
+            </button>
+          </div>
+        </form>
+
+        <div id="cruxStatusResultContainer">
+          <div style="text-align: center; color: var(--text-muted); padding: 2rem; background: var(--bg-abyss); border: 1px solid var(--border-hairline); border-radius: var(--radius-md);">
+            Enter your Team ID (e.g. CRUX-MUY...) or registered Leader phone number to review approval status and retrieve your official Pitch Pass QR.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Registration Submitted Pending Modal -->
+  <div id="cruxPendingNoticeModal" class="modal-overlay">
+    <div class="modal-container" style="max-width: 560px;">
+      <div class="modal-header">
+        <div>
+          <span style="font-family: var(--font-mono); font-size: 0.72rem; color: #fbbf24; font-weight: 700; letter-spacing: 0.8px;">
+            APPLICATION SUBMITTED // PENDING VERIFICATION
+          </span>
+          <h3 style="margin-top: 3px;">Dossier Received Successfully</h3>
+        </div>
+        <button class="modal-close-btn" onclick="closeCruxPendingNoticeModal()">&times;</button>
+      </div>
+
+      <div class="modal-body" style="text-align: center; padding: 1.75rem 1.5rem;">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(245, 158, 11, 0.12); border: 2px solid #f59e0b; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5" width="30" height="30"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        </div>
+
+        <div style="display: inline-block; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; padding: 0.35rem 0.85rem; border-radius: 20px; letter-spacing: 0.8px; margin-bottom: 0.85rem;">
+          STATUS: PENDING COMMITTEE VERIFICATION
+        </div>
+
+        <div style="background: var(--bg-abyss); border: 1px solid var(--border-hairline); border-radius: var(--radius-md); padding: 1.15rem; margin: 1rem 0; text-align: left;">
+          <div style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); text-transform: uppercase;">Team Dossier Reference ID</div>
+          <div id="pendingModalTeamId" style="font-family: var(--font-mono); font-size: 1.2rem; font-weight: 800; color: var(--accent-cyan); letter-spacing: 1px; margin-top: 2px;">CRUX-XXXXXX-XXX</div>
+          <div id="pendingModalTeamMeta" style="font-size: 0.85rem; color: #cbd5e1; margin-top: 4px; font-weight: 600;">Startup Name • Bracket</div>
+        </div>
+
+        <p style="font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 1.25rem; text-align: left;">
+          We will shortly confirm all details and verify your payment receipt. Once approved, you will receive an official confirmation email updating you regarding your <strong>timing slot, room sequence, and verified Pitch Pass QR</strong> for 15 October at Al-Beruni Auditorium.
+        </p>
+
+        <div style="background: rgba(0, 240, 212, 0.06); border: 1px dashed var(--border-active); border-radius: var(--radius-sm); padding: 0.85rem; font-size: 0.8rem; color: var(--accent-cyan-dim); line-height: 1.45; margin-bottom: 1.5rem; text-align: left;">
+          💡 <em>Note: Keep your Team ID saved. You can track your real-time approval status anytime by clicking "Check Status" in the top bar.</em>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+          <button type="button" class="btn btn-cyan btn-sm" onclick="trackFromPendingModal()" style="min-width: 170px;">
+            🔍 View Status Details
+          </button>
+          <button type="button" class="btn btn-outline-cyan btn-sm" onclick="closeCruxPendingNoticeModal()" style="min-width: 110px;">
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Public Portal QR Code Share Modal -->
+  <div id="publicQrModal" class="modal-overlay" onclick="closePublicQrModal()">
+    <div class="modal-container" style="max-width: 480px; text-align: center;" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-cyan); font-weight: 700; letter-spacing: 0.8px;">
+            OFFICIAL QUICK ACCESS QR
+          </span>
+          <h3 style="margin-top: 3px;">Scan to Open Portal</h3>
+        </div>
+        <button class="modal-close-btn" onclick="closePublicQrModal()">&times;</button>
+      </div>
+
+      <div class="modal-body" style="padding: 1.5rem 1.25rem;">
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Scan with any mobile camera to instantly open registration, submit startup dossiers, or check team status.
+        </p>
+
+        <div style="background: #ffffff; padding: 1rem; border-radius: var(--radius-md); display: inline-block; margin-bottom: 1rem; box-shadow: 0 10px 25px rgba(0, 240, 212, 0.2);">
+          <img src="/assets/pitchpoint_public_qr.png" alt="Pitch Point QR Code" style="width: 220px; height: 220px; display: block; margin: 0 auto;">
+        </div>
+
+        <div style="background: var(--bg-abyss); border: 1px solid var(--border-hairline); border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;">
+          <span id="cleanPublicUrlSpan" style="font-family: var(--font-mono); font-size: 0.88rem; color: var(--accent-cyan); font-weight: 700; word-break: break-all;">
+            https://tinyurl.com/pitchpoint-bu
+          </span>
+          <button type="button" class="btn btn-outline-cyan btn-sm" onclick="copyCleanLink()" style="padding: 4px 10px; font-size: 0.75rem; white-space: nowrap;">
+            📋 Copy
+          </button>
+        </div>
+
+        <div style="display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap;">
+          <a href="/assets/pitchpoint_public_qr.png" download="PITCHPOINT_2026_PUBLIC_QR.png" class="btn btn-cyan btn-sm" style="text-decoration: none;">
+            ⬇️ Download PNG QR
+          </a>
+          <a href="https://wa.me/?text=Register%20your%20startup%20for%20PITCH%20POINT%20//%20ZINDIGI%20PRIZE%20at%20Bahria%20University:%20https://tinyurl.com/pitchpoint-bu" target="_blank" class="btn btn-outline-cyan btn-sm" style="text-decoration: none;">
+            📲 Share WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fullscreen Poster Preview Modal -->
+  <div id="posterPreviewModal" class="modal-overlay" onclick="closePosterPreviewModal()">
+    <div class="modal-container" style="max-width: 620px; background: #010a0d;" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h4 id="previewPosterTitle" style="color: #fff; font-size: 1.05rem; font-family: var(--font-display);">Official Poster Inspection</h4>
+        <button class="modal-close-btn" onclick="closePosterPreviewModal()">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 1rem; text-align: center;">
+        <img id="previewPosterImg" src="" alt="Enlarged Poster" style="width: 100%; max-height: 75vh; object-fit: contain; border-radius: 8px;">
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="brand-title">ZINDIGI <span class="brand-x">PRIZE</span></div>
+        <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-cyan); font-weight: 700; margin-top: 3px; letter-spacing: 1px;">BSEAS-H11 CAMPUS ROUND</div>
+        <p style="margin-top: 0.75rem;">
+          Official Campus Round of the Zindigi Prize by JS Bank at Bahria University BSEAS H-11 Campus. Empowering visionary student entrepreneurs to transform breakthrough ideas into scalable enterprises.
+        </p>
+        <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem;">
+          <a href="https://www.instagram.com/zindigiprizebseas?igsh=M2g4cWdzN2kydnhl" target="_blank" class="btn btn-outline-cyan btn-sm">
+            Instagram @zindigiprizebseas
+          </a>
+          <a href="https://wa.me/923292092724" target="_blank" class="btn btn-cyan btn-sm">
+            WhatsApp Coordinator
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h5>Quick Links</h5>
+        <ul>
+          <li><a href="/ideacrux.html">Official Portal Home</a></li>
+          <li><a href="javascript:void(0)" onclick="openCruxRegisterModal()">Team Registration</a></li>
+          <li><a href="javascript:void(0)" onclick="openCruxStatusModal()">Check Team Status</a></li>
+          <li><a href="/crux-admin.html">Venture Admin Console</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Event Details</h5>
+        <ul>
+          <li><span style="color: var(--text-muted);">Date:</span> 15 October 2026</li>
+          <li><span style="color: var(--text-muted);">Venue:</span> Al-Beruni Auditorium</li>
+          <li><span style="color: var(--text-muted);">Campus:</span> BSEAS H-11</li>
+          <li><span style="color: var(--text-muted);">Fee:</span> Rs. 1,000 / Team</li>
+          <li><span style="color: var(--text-muted);">Prize:</span> PKR 30,000/-</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>© 2026 Zindigi Prize BSEAS H-11 Campus • Powered by JS Bank & Bahria University</div>
+      <div>Al-Beruni Auditorium, Islamabad</div>
+    </div>
+  </footer>
+
+  <script src="/ideacrux.js"></script>
+
+  <!-- QR Codes Hub Modal (Public Registration & Payment QR Codes) -->
+  <div class="hud-modal-overlay" id="portalQrModal">
+    <div class="hud-modal-card" style="max-width: 620px; text-align: center;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-hairline); padding-bottom: 1rem;">
+        <div>
+          <h3 style="font-family: var(--font-display); color: #fff; font-size: 1.35rem;">📱 Official Registration & Payment QR</h3>
+          <p style="color: var(--text-muted); font-size: 0.82rem; margin-top: 2px;">Official mobile access links for Zindigi Prize BSEAS-H11 participants</p>
+        </div>
+        <button type="button" class="hud-modal-close" onclick="closePortalQrModal()">✕</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+        <!-- 1. Public Portal QR -->
+        <div style="background: rgba(4, 20, 25, 0.8); border: 1px solid var(--border-active); border-radius: 14px; padding: 1.25rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.5rem;">
+            🌐 PUBLIC REGISTRATION
+          </div>
+          <div style="background: #fff; padding: 8px; border-radius: 10px; display: inline-block; margin-bottom: 0.75rem;">
+            <img src="/assets/pitchpoint_public_qr.svg" alt="Public Registration QR" style="width: 150px; height: 150px; display: block;">
+          </div>
+          <div style="font-size: 0.82rem; color: #fff; font-weight: 600;">Scan to Register Online</div>
+          <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">tinyurl.com/pitchpoint-bu</p>
+          <a href="/assets/pitchpoint_public_qr.png" download="PitchPoint_Registration_QR.png" class="hud-btn hud-btn-outline" style="font-size: 0.72rem; margin-top: 0.5rem; display: inline-block;">
+            Download QR
+          </a>
+        </div>
+
+        <!-- 2. Payment QR -->
+        <div style="background: rgba(4, 20, 25, 0.8); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 14px; padding: 1.25rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.75rem; color: #34d399; font-weight: 700; margin-bottom: 0.5rem;">
+            💳 ZINDIGI / RAAST (RS. 1,000)
+          </div>
+          <div style="background: #fff; padding: 4px; border-radius: 10px; display: inline-block; margin-bottom: 0.75rem; cursor: pointer;" onclick="openPaymentQrZoomModal()">
+            <img src="/assets/zindigi_payment_qr.jpg" alt="Payment QR" style="width: 150px; height: 150px; object-fit: contain; display: block; border-radius: 8px;">
+          </div>
+          <div style="font-size: 0.82rem; color: #fff; font-weight: 600;">Muhammad Huzaifa</div>
+          <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">0329 2092724 (Raast)</p>
+          <a href="/assets/zindigi_payment_qr.jpg" download="Zindigi_Raast_Payment_QR.jpg" class="hud-btn hud-btn-outline" style="font-size: 0.72rem; margin-top: 0.5rem; display: inline-block;">
+            Download QR Card
+          </a>
+        </div>
+      </div>
+
+      <button type="button" class="hud-btn hud-btn-cyan" style="width: 100%;" onclick="closePortalQrModal()">
+        Close
+      </button>
+    </div>
+  </div>
+
+  <!-- High-Res Payment QR Zoom Modal -->
+  <div class="hud-modal-overlay" id="paymentQrZoomModal">
+    <div class="hud-modal-card" style="max-width: 480px; text-align: center; background: #020b0e; border: 2px solid var(--accent-cyan);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h4 style="font-family: var(--font-display); color: #fff; font-size: 1.15rem;">Official Zindigi / Raast Payment Card</h4>
+        <button type="button" class="hud-modal-close" onclick="closePaymentQrZoomModal()">✕</button>
+      </div>
+      <img src="/assets/zindigi_payment_qr.jpg" alt="Zindigi Payment Card" style="width: 100%; border-radius: 12px; margin-bottom: 1rem; box-shadow: 0 8px 30px rgba(0,240,212,0.3);">
+      <div style="font-size: 0.85rem; color: #fff; margin-bottom: 1rem;">
+        Entry Fee: <strong style="color: var(--accent-cyan); font-size: 1.1rem;">Rs. 1,000</strong>
+      </div>
+      <button type="button" class="hud-btn hud-btn-outline" style="width: 100%;" onclick="closePaymentQrZoomModal()">
+        Back to Registration
+      </button>
+    </div>
+  </div>
+
+  <!-- Fullscreen Official Poster Preview / Lightbox Modal -->
+  <div id="posterPreviewModal" class="modal-overlay" onclick="if(event.target === this) closePosterPreviewModal()">
+    <div class="poster-lightbox-container">
+      <div class="poster-lightbox-header">
+        <div class="poster-lightbox-meta">
+          <span class="editorial-badge" style="font-size: 0.68rem; padding: 2px 8px;">OFFICIAL EVENT POSTER</span>
+          <h3 id="posterModalTitle" style="color: #ffffff; font-family: var(--font-display); font-size: 1.15rem; margin-top: 4px;">PITCH POINT Official Poster</h3>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <a id="posterDownloadBtn" href="/assets/pitch_point_poster_dark.jpg" download="Pitch_Point_Zindigi_Prize_Poster.jpg" class="btn btn-outline-cyan btn-sm" target="_blank">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Download HD Poster
+          </a>
+          <button class="modal-close" onclick="closePosterPreviewModal()" style="font-size: 1.6rem; line-height: 1; padding: 4px 8px; cursor: pointer; background: transparent; border: none;">&times;</button>
+        </div>
+      </div>
+      <div class="poster-lightbox-body">
+        <img id="posterModalImg" src="/assets/pitch_point_poster_dark.jpg" alt="Poster Full Preview" class="poster-lightbox-img">
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
+

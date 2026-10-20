@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Team Directory & Contacts | Bahria Pitch Point (Zindigi Prize)</title>
+  <meta name="description" content="Official view-only presenter directory and contact roster for IdeaCrux // Zindigi Prize at Bahria University.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ideacrux.css">
+  <style>
+    :root {
+      --bg-dark: #030712;
+      --surface-dark: #0b1324;
+      --surface-card: rgba(15, 23, 42, 0.75);
+      --border-line: rgba(56, 189, 248, 0.15);
+      --border-active: rgba(56, 189, 248, 0.4);
+      --accent-view: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.2);
+      --accent-wa: #25d366;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-display: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.06) 0%, transparent 40%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: var(--font-display);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hud-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 1.25rem 1rem 3rem 1rem;
+      width: 100%;
+    }
+
+    /* Top Navigation */
+    .top-navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.85rem 1.25rem;
+      background: rgba(11, 19, 36, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-line);
+      border-radius: var(--radius-lg);
+      margin-bottom: 1.5rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #000;
+      font-size: 1.15rem;
+      box-shadow: 0 0 16px var(--accent-glow);
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .brand-subtitle {
+      font-size: 0.7rem;
+      color: var(--accent-view);
+      font-family: var(--font-mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.76rem;
+      font-family: var(--font-mono);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-line);
+      padding: 0.4rem 0.8rem;
+      border-radius: 999px;
+      color: var(--text-muted);
+    }
+
+    .hud-btn {
+      padding: 0.45rem 0.9rem;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .hud-btn-outline {
+      background: transparent;
+      color: var(--text-muted);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .hud-btn-outline:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .hud-btn-wa {
+      background: rgba(37, 211, 102, 0.15);
+      color: #4ade80;
+      border-color: rgba(37, 211, 102, 0.4);
+    }
+    .hud-btn-wa:hover {
+      background: rgba(37, 211, 102, 0.25);
+      border-color: #25d366;
+      color: #fff;
+      box-shadow: 0 0 12px rgba(37, 211, 102, 0.35);
+    }
+
+    /* Metric Cards */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .metric-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-line);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .metric-label {
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.35rem;
+    }
+
+    .metric-val {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+      font-family: var(--font-mono);
+    }
+
+    /* Filter Toolbar */
+    .toolbar-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-line);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      gap: 0.85rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 240px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-line);
+      border-radius: var(--radius-sm);
+      padding: 0.55rem 0.85rem;
+      color: #fff;
+      font-size: 0.85rem;
+      font-family: var(--font-display);
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent-view);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .filter-select {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-line);
+      border-radius: var(--radius-sm);
+      padding: 0.55rem 0.85rem;
+      color: #fff;
+      font-size: 0.82rem;
+      font-family: var(--font-mono);
+    }
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--accent-view);
+    }
+
+    /* Table Styles */
+    .table-container {
+      background: var(--surface-card);
+      border: 1px solid var(--border-line);
+      border-radius: var(--radius-lg);
+      overflow-x: auto;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .data-table th {
+      background: rgba(11, 19, 36, 0.9);
+      padding: 0.85rem 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent-view);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-active);
+    }
+
+    .data-table td {
+      padding: 0.95rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.86rem;
+      vertical-align: middle;
+    }
+
+    .data-table tr:hover {
+      background: rgba(56, 189, 248, 0.03);
+    }
+
+    .project-title {
+      font-weight: 700;
+      color: #fff;
+      font-size: 0.96rem;
+      letter-spacing: -0.01em;
+    }
+
+    .team-sub {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-top: 2px;
+    }
+
+    .slot-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #7dd3fc;
+    }
+
+    .slot-badge-empty {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+    }
+
+    .status-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+    }
+    .status-arrived {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      color: #4ade80;
+    }
+    .status-pending {
+      background: rgba(234, 179, 8, 0.12);
+      border: 1px solid rgba(234, 179, 8, 0.3);
+      color: #fde047;
+    }
+
+    .security-notice {
+      margin-top: 2rem;
+      padding: 0.85rem 1.25rem;
+      border-radius: var(--radius-md);
+      background: rgba(56, 189, 248, 0.05);
+      border: 1px dashed rgba(56, 189, 248, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="hud-container">
+    <!-- Top Navbar -->
+    <header class="top-navbar">
+      <div class="brand-wrap">
+        <div class="brand-logo-badge">📖</div>
+        <div>
+          <h1 class="brand-title">PRESENTER DIRECTORY</h1>
+          <div class="brand-subtitle">IdeaCrux // Zindigi Prize • View-Only Roster</div>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <div class="user-pill" id="viewerBadge">
+          <span>👤 Loading...</span>
+        </div>
+        <button type="button" class="hud-btn hud-btn-outline" onclick="logoutViewer()">Sign Out</button>
+      </div>
+    </header>
+
+    <!-- Metrics -->
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-label">Verified Presenters</div>
+        <div class="metric-val" id="metricTotal">--</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Timing Slots Assigned</div>
+        <div class="metric-val" id="metricSlotted" style="color: var(--accent-view);">--</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Auditorium Checked-In</div>
+        <div class="metric-val" id="metricArrived" style="color: #4ade80;">--</div>
+      </div>
+    </div>
+
+    <!-- Search & Filter Toolbar -->
+    <div class="toolbar-card">
+      <input type="text" id="viewerSearch" class="search-input" placeholder="🔍 Search by Project Title, Presenter Name, Team, or WhatsApp..." oninput="renderTable()">
+      <select id="viewerFilter" class="filter-select" onchange="renderTable()">
+        <option value="ALL">Show All Teams</option>
+        <option value="SLOTTED">Assigned Timing Slots</option>
+        <option value="UNSLOTTED">Pending Slot Assignment</option>
+        <option value="ARRIVED">Checked-In at Auditorium</option>
+      </select>
+      <button type="button" class="hud-btn hud-btn-outline" onclick="loadDirectoryData()">🔄 Refresh</button>
+    </div>
+
+    <!-- Read-Only Teams Table -->
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 32%;">Project / Startup Title</th>
+            <th style="width: 20%;">Presenter / Team Leader</th>
+            <th style="width: 18%;">WhatsApp / Phone</th>
+            <th style="width: 15%;">Department / Sem</th>
+            <th style="width: 15%;">Assigned Slot</th>
+          </tr>
+        </thead>
+        <tbody id="directoryTableBody">
+          <tr>
+            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2.5rem;">
+              Loading verified teams directory...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="security-notice">
+      <span>🔒</span>
+      <div>
+        <strong>Strict View-Only Isolation Active:</strong> This console provides verified presenter names, WhatsApp contacts, and project titles for team coordination. Payment ledgers, bank receipts, and stage controls are restricted.
+      </div>
+    </div>
+  </div>
+
+  <script src="/crux-directory.js"></script>
+</body>
+</html>

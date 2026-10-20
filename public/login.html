@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <meta name="theme-color" content="#070a13">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Staff Portal Login | Bahria Fiesta 2026</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem 1rem;
+      background: radial-gradient(circle at top right, rgba(0, 240, 212, 0.15), transparent 45%),
+                  radial-gradient(circle at bottom left, rgba(13, 148, 136, 0.12), transparent 40%),
+                  #021115;
+    }
+    .login-card {
+      width: 100%;
+      max-width: 440px;
+      background: rgba(4, 28, 34, 0.92);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(0, 240, 212, 0.22);
+      border-radius: 24px;
+      padding: 2.25rem 2rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 240, 212, 0.1);
+    }
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 1.75rem 1.25rem;
+        border-radius: 20px;
+      }
+    }
+    .login-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .login-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 1rem;
+      background: linear-gradient(135deg, #00f0d4, #0d9488);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      box-shadow: 0 8px 25px rgba(0, 240, 212, 0.3);
+    }
+    .login-title {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.35rem;
+    }
+    .login-subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .quick-roles {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.6rem;
+      margin-bottom: 1.75rem;
+    }
+    .role-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 0.75rem 0.6rem;
+      color: var(--text-light);
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .role-btn:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .role-btn.active {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: #10b981;
+      color: #34d399;
+    }
+    .btn-login {
+      width: 100%;
+      height: 52px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border-radius: 14px;
+      margin-top: 1.25rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+    <div class="login-header">
+      <img src="/assets/zindigi_pitchpoint_logo.svg" alt="Pitch Point Logo" style="height: 44px; margin-bottom: 0.75rem; display: block; margin-inline: auto;">
+      <h1 class="login-title">Staff Portal Login</h1>
+      <p class="login-subtitle">PITCH POINT // Zindigi Prize BSEAS-H11</p>
+    </div>
+
+    <!-- Quick Role Switcher (For guidance, without pre-filling passwords) -->
+    <div class="quick-roles" style="grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));">
+      <button type="button" class="role-btn" onclick="selectRole('judge', this)">
+        <span>⚖️</span> Judge Panel
+      </button>
+      <button type="button" class="role-btn" onclick="selectRole('coordinator', this)">
+        <span>📋</span> Stage & Slots
+      </button>
+      <button type="button" class="role-btn" onclick="selectRole('admin', this)">
+        <span>👑</span> Admin / Director
+      </button>
+      <button type="button" class="role-btn" onclick="selectRole('finance', this)">
+        <span>📒</span> Head of Finance
+      </button>
+      <button type="button" class="role-btn" onclick="selectRole('cashier', this)">
+        <span>💼</span> Cashier Desk
+      </button>
+      <button type="button" class="role-btn" onclick="selectRole('scanner', this)">
+        <span>📷</span> Gate Scanner
+      </button>
+      <button type="button" class="role-btn" onclick="selectRole('viewer', this)">
+        <span>📖</span> View Directory
+      </button>
+    </div>
+
+    <!-- Login Form -->
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label for="usernameInput">Staff Username / ID</label>
+        <input type="text" id="usernameInput" class="form-control" placeholder="Enter username (e.g. maajid)" value="" required autocomplete="username" style="height: 50px; font-size: 1rem;">
+      </div>
+
+      <div class="form-group">
+        <label for="passwordInput">Password</label>
+        <input type="password" id="passwordInput" class="form-control" placeholder="Enter password" value="" required autocomplete="current-password" style="height: 50px; font-size: 1rem;">
+      </div>
+
+      <div id="loginError" style="display: none; padding: 0.75rem; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 10px; color: #f87171; font-size: 0.85rem; margin-top: 0.75rem; text-align: center;">
+      </div>
+
+      <button type="submit" id="loginSubmitBtn" class="btn btn-emerald btn-login">
+        🚀 Sign In & Enter Portal
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 1.5rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+      <a href="/ideacrux.html" style="color: #00f0d4; font-size: 0.85rem; text-decoration: none; font-weight: 700;">
+        💎 PITCH POINT // ZINDIGI PRIZE PORTAL &rarr;
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function selectRole(role, btn) {
+      document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const uInput = document.getElementById('usernameInput');
+      const pInput = document.getElementById('passwordInput');
+      pInput.value = '';
+      if (role === 'judge') uInput.placeholder = 'Enter judge username (e.g. judge1)';
+      else if (role === 'coordinator') uInput.placeholder = 'Enter coordinator username (e.g. coordinator)';
+      else if (role === 'admin') uInput.placeholder = 'Enter admin username (e.g. maajid)';
+      else if (role === 'finance') uInput.placeholder = 'Enter finance username (e.g. finance)';
+      else if (role === 'cashier') uInput.placeholder = 'Enter cashier username (e.g. cashier1)';
+      else if (role === 'scanner') uInput.placeholder = 'Enter scanner username (e.g. scanner1)';
+      else if (role === 'viewer') uInput.placeholder = 'Enter viewer username (e.g. viewer)';
+      uInput.focus();
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('usernameInput').value.trim();
+      const pass = document.getElementById('passwordInput').value.trim();
+      const errBox = document.getElementById('loginError');
+      const submitBtn = document.getElementById('loginSubmitBtn');
+
+      errBox.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Verifying Credentials...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: user, password: pass })
+        });
+        const data = await res.json();
+
+        if (data.success && data.redirect_url) {
+          localStorage.setItem('bahria_staff_user', JSON.stringify(data.user));
+          localStorage.setItem('bahria_auth_token', data.token);
+
+          // Check if there was a return URL
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirectTarget = urlParams.get('redirect');
+          if (redirectTarget && !redirectTarget.includes('login.html')) {
+            window.location.href = redirectTarget.startsWith('/') ? redirectTarget : `/${redirectTarget}`;
+          } else {
+            window.location.href = data.redirect_url;
+          }
+        } else {
+          errBox.textContent = data.error || 'Invalid login credentials.';
+          errBox.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = '🚀 Sign In & Enter Portal';
+        }
+      } catch (err) {
+        errBox.textContent = 'Server connection error. Please try again.';
+        errBox.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = '🚀 Sign In & Enter Portal';
+      }
+    }
+  </script>
+</body>
+</html>

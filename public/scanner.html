@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <meta name="theme-color" content="#060913">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Turnstile Gate Scanner | Zindigi Prize BSEAS-H11</title>
+  <meta name="description" content="Campus Gate Entry Scanner for Zindigi Prize BSEAS-H11. Instant QR code verification and anti-fraud ticket check-in.">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    (function() {
+      try {
+        const token = localStorage.getItem('bahria_auth_token');
+        const userStr = localStorage.getItem('bahria_staff_user');
+        const user = userStr ? JSON.parse(userStr) : null;
+        if (!token || !user || (user.role !== 'GATE_SCANNER' && user.role !== 'CASHIER' && user.role !== 'ADMIN')) {
+          window.location.replace('/login.html?redirect=scanner.html');
+        }
+      } catch(e) {
+        window.location.replace('/login.html?redirect=scanner.html');
+      }
+    })();
+  </script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- html5-qrcode for fast camera barcode decoding -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    body {
+      background-color: #060913;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: env(safe-area-inset-bottom, 15px);
+    }
+    .scanner-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 1rem 0.75rem;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .scanner-card {
+      background: #0d1322;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 1.25rem 1rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      position: relative;
+      overflow: hidden;
+    }
+    #reader {
+      width: 100%;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid rgba(99, 102, 241, 0.4);
+      background: #000;
+      min-height: 250px;
+    }
+    #reader video {
+      border-radius: 12px;
+      object-fit: cover;
+      width: 100% !important;
+    }
+    .scanner-controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      justify-content: space-between;
+    }
+    .scanner-controls .btn {
+      flex: 1;
+      min-height: 44px;
+      padding: 0.5rem 0.25rem;
+      font-size: 0.78rem;
+      justify-content: center;
+      white-space: nowrap;
+    }
+    .gate-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(99, 102, 241, 0.15);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    /* Fullscreen Scan Result Modal */
+    .scan-result-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+      animation: fadeIn 0.2s ease-out;
+    }
+    .scan-result-overlay.open {
+      display: flex;
+    }
+    .result-box {
+      width: 100%;
+      max-width: 480px;
+      border-radius: 24px;
+      padding: 2.25rem 2rem;
+      text-align: center;
+      color: #fff;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.9);
+      position: relative;
+    }
+    .result-box.approved {
+      background: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
+      border: 3px solid #10b981;
+      box-shadow: 0 0 50px rgba(16, 185, 129, 0.4);
+    }
+    .result-box.already-used {
+      background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%);
+      border: 3px solid #ef4444;
+      box-shadow: 0 0 50px rgba(239, 68, 68, 0.4);
+    }
+    .result-box.unverified {
+      background: linear-gradient(135deg, #78350f 0%, #451a03 100%);
+      border: 3px solid #f59e0b;
+      box-shadow: 0 0 50px rgba(245, 158, 11, 0.4);
+    }
+    .result-box.invalid {
+      background: linear-gradient(135deg, #374151 0%, #111827 100%);
+      border: 3px solid #6b7280;
+    }
+    .result-icon {
+      font-size: 3.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .result-title {
+      font-family: var(--font-heading);
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .result-student-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-top: 0.75rem;
+    }
+    .result-meta {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      margin-top: 0.25rem;
+    }
+    .countdown-bar {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+      margin-top: 1.5rem;
+      overflow: hidden;
+    }
+    .countdown-fill {
+      height: 100%;
+      background: #fff;
+      width: 100%;
+      transition: width 2.5s linear;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="/ideacrux.html" class="brand" style="text-decoration: none; display: flex; align-items: center; gap: 0.75rem;">
+      <img src="/assets/zindigi_pitchpoint_logo.svg" alt="Pitch Point Logo" style="height: 38px; width: auto;">
+      <div style="font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 700; color: #00f0d4; letter-spacing: 0.5px;">// GATE SCANNER</div>
+    </a>
+    <div class="nav-actions">
+      <span class="gate-badge" style="background: rgba(0, 240, 212, 0.15); color: #00f0d4; border-color: rgba(0, 240, 212, 0.3);">
+        <span>📍</span> Al-Beruni Auditorium Gate
+      </span>
+      <a href="/crux-desk.html" class="btn btn-outline btn-sm">
+        💵 Cashier Desk
+      </a>
+      <button class="btn btn-outline btn-sm" style="color: #f87171; border-color: rgba(239, 68, 68, 0.4); font-weight: 700;" onclick="logoutScanner()">
+        🚪 Sign Out
+      </button>
+    </div>
+  </nav>
+
+  <script>
+    function logoutScanner() {
+      localStorage.removeItem('bahria_auth_token');
+      localStorage.removeItem('bahria_staff_user');
+      window.location.href = '/login.html';
+    }
+  </script>
+
+  <div class="scanner-container">
+    
+    <div style="text-align: center; margin-bottom: 1.25rem;">
+      <h2 style="font-family: var(--font-heading); color: #fff;">Point Camera at Attendee QR Pass</h2>
+      <p style="color: var(--text-secondary); font-size: 0.88rem;">
+        Instant admission check-in. Prevents duplicated or reused passes.
+      </p>
+    </div>
+
+    <div class="scanner-card">
+      <div id="reader"></div>
+
+      <div class="scanner-controls">
+        <button class="btn btn-outline btn-sm" id="btnSwitchCamera">
+          🔄 Flip Camera
+        </button>
+        <button class="btn btn-outline btn-sm" id="btnToggleSound">
+          🔊 Sound: ON
+        </button>
+        <button class="btn btn-outline btn-sm" id="btnManualEntryToggle">
+          ⌨️ Type ID
+        </button>
+      </div>
+
+      <!-- Manual Code Entry Fallback -->
+      <div id="manualEntryBox" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08);">
+        <label style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 4px; display: block;">Enter Ticket Reference or Roll Number:</label>
+        <div style="display: flex; gap: 0.5rem;">
+          <input type="text" id="manualTicketInput" class="form-control" placeholder="e.g. BU-M8K9-123 or 01-134211-045">
+          <button class="btn btn-emerald btn-sm" id="btnVerifyManual">
+            Verify
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gate Session Stats -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+      <div style="background: #0d1322; border: 1px solid var(--bg-card-border); border-radius: 14px; padding: 1rem; text-align: center;">
+        <div style="font-size: 0.75rem; color: var(--text-muted);">ADMITTED THIS SESSION</div>
+        <div id="sessionCount" style="font-size: 1.75rem; font-weight: 800; color: #34d399; font-family: var(--font-heading);">0</div>
+      </div>
+      <div style="background: #0d1322; border: 1px solid var(--bg-card-border); border-radius: 14px; padding: 1rem; text-align: center;">
+        <div style="font-size: 0.75rem; color: var(--text-muted);">LAST SCANNED</div>
+        <div id="lastScannedTime" style="font-size: 1.1rem; font-weight: 700; color: #a5b4fc; margin-top: 6px;">Ready</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Fullscreen Scan Result Modal -->
+  <div class="scan-result-overlay" id="resultOverlay">
+    <div class="result-box" id="resultBox">
+      <div class="result-icon" id="resIcon">✓</div>
+      <div class="result-title" id="resTitle">ENTRY GRANTED</div>
+      <div class="result-student-name" id="resName">-</div>
+      <div class="result-meta" id="resMeta">-</div>
+      <div class="result-meta" id="resSubMeta" style="font-size: 0.8rem; opacity: 0.75; margin-top: 4px;">-</div>
+      <div class="countdown-bar">
+        <div class="countdown-fill" id="countFill"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let html5QrCode = null;
+    let isScanning = false;
+    let currentCameraIndex = 0;
+    let availableCameras = [];
+    let soundEnabled = true;
+    let admittedCount = 0;
+    let isProcessing = false;
+
+    // Web Audio Synthesizer for instant sound feedback (no external files needed)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSuccessChime() {
+      if (!soundEnabled || !audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1); // A5
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.35);
+      } catch (e) {}
+    }
+
+    function playFraudAlertSound() {
+      if (!soundEnabled || !audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(160, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.45);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.45);
+      } catch (e) {}
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      setupControls();
+      await initScanner();
+    });
+
+    function setupControls() {
+      document.getElementById('btnToggleSound').addEventListener('click', (e) => {
+        soundEnabled = !soundEnabled;
+        e.target.textContent = soundEnabled ? '🔊 Sound: ON' : '🔇 Sound: OFF';
+      });
+
+      document.getElementById('btnManualEntryToggle').addEventListener('click', () => {
+        const box = document.getElementById('manualEntryBox');
+        box.style.display = box.style.display === 'none' ? 'block' : 'none';
+        if (box.style.display === 'block') {
+          document.getElementById('manualTicketInput').focus();
+        }
+      });
+
+      document.getElementById('btnVerifyManual').addEventListener('click', () => {
+        const val = document.getElementById('manualTicketInput').value.trim();
+        if (val) verifyTicketCode(val, true);
+      });
+
+      document.getElementById('manualTicketInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          const val = e.target.value.trim();
+          if (val) verifyTicketCode(val, true);
+        }
+      });
+
+      document.getElementById('btnSwitchCamera').addEventListener('click', async () => {
+        if (availableCameras.length > 1) {
+          currentCameraIndex = (currentCameraIndex + 1) % availableCameras.length;
+          await startScanner(availableCameras[currentCameraIndex].id);
+        }
+      });
+    }
+
+    async function initScanner() {
+      try {
+        html5QrCode = new Html5Qrcode("reader");
+        const cameras = await Html5Qrcode.getCameras();
+        if (cameras && cameras.length > 0) {
+          availableCameras = cameras;
+          // Prefer back/environment camera
+          const backCamIndex = cameras.findIndex(c => c.label.toLowerCase().includes('back') || c.label.toLowerCase().includes('environment'));
+          currentCameraIndex = backCamIndex !== -1 ? backCamIndex : 0;
+          await startScanner(availableCameras[currentCameraIndex].id);
+        } else {
+          document.getElementById('reader').innerHTML = '<div style="padding: 2rem; color: #ef4444; text-align: center;">No camera detected on this device. Use manual code entry below.</div>';
+          document.getElementById('manualEntryBox').style.display = 'block';
+        }
+      } catch (err) {
+        console.error('Camera init error:', err);
+        document.getElementById('reader').innerHTML = '<div style="padding: 2rem; color: #ef4444; text-align: center;">Camera permission denied or camera unavailable.</div>';
+        document.getElementById('manualEntryBox').style.display = 'block';
+      }
+    }
+
+    async function startScanner(cameraId) {
+      if (isScanning) {
+        await html5QrCode.stop();
+        isScanning = false;
+      }
+      try {
+        await html5QrCode.start(
+          cameraId,
+          {
+            fps: 15,
+            qrbox: { width: 250, height: 250 }
+          },
+          (decodedText) => {
+            if (!isProcessing) {
+              verifyTicketCode(decodedText, false);
+            }
+          },
+          (errorMessage) => {}
+        );
+        isScanning = true;
+      } catch (e) {
+        console.warn('Start scanner error:', e);
+      }
+    function escapeHtml(str) {
+      if (typeof str !== 'string') return String(str || '');
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    async function verifyTicketCode(rawQr, isManual = false) {
+      isProcessing = true;
+
+      try {
+        const token = localStorage.getItem('bahria_auth_token');
+        if (!token) {
+          window.location.replace('/login.html?redirect=scanner.html');
+          return;
+        }
+
+        let ticketId = rawQr;
+        try {
+          const parsed = JSON.parse(rawQr);
+          ticketId = parsed.team_id || parsed.ticket_id || parsed.stall_id || parsed.receipt_no || parsed.trx_id || rawQr;
+        } catch {}
+
+        const staffStr = localStorage.getItem('bahria_staff_user');
+        const staffObj = staffStr ? JSON.parse(staffStr) : null;
+        const scannerName = staffObj ? `${staffObj.full_name} (${staffObj.role})` : 'Gate Scanner';
+
+        const res = await fetch('/api/ticket/verify-gate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            ticket_id: ticketId,
+            qr_raw: rawQr,
+            allow_manual_roll: isManual,
+            scanned_by: scannerName
+          })
+        });
+
+        if (res.status === 401 || res.status === 403) {
+          localStorage.removeItem('bahria_auth_token');
+          localStorage.removeItem('bahria_staff_user');
+          window.location.replace('/login.html?redirect=scanner.html&error=session_expired');
+          return;
+        }
+
+        const data = await res.json();
+        showResultModal(data);
+
+      } catch (err) {
+        showResultModal({
+          success: false,
+          status: 'NETWORK_ERROR',
+          message: 'Server communication error. Check gate Wi-Fi / connection.'
+        });
+      }
+    }
+
+    function showResultModal(data) {
+      const overlay = document.getElementById('resultOverlay');
+      const box = document.getElementById('resultBox');
+      const icon = document.getElementById('resIcon');
+      const title = document.getElementById('resTitle');
+      const name = document.getElementById('resName');
+      const meta = document.getElementById('resMeta');
+      const subMeta = document.getElementById('resSubMeta');
+      const countFill = document.getElementById('countFill');
+
+      box.className = 'result-box';
+
+      if (data.status === 'APPROVED') {
+        playSuccessChime();
+        box.classList.add('approved');
+        icon.textContent = '🟢';
+        title.textContent = 'ENTRY GRANTED';
+        name.textContent = data.student.name;
+
+        const isCash = data.student.channel === 'DESK_CASH' || data.student.payment_method === 'CASH';
+        const isIdeaCrux = data.student.ticket_type === 'OFFICIAL_IDEACRUX_PITCH_PASS' || String(data.student.id || '').startsWith('CRUX-');
+
+        const channelBadge = isIdeaCrux
+          ? `<span style="background: rgba(0, 240, 212, 0.25); color: #00f0d4; padding: 2px 10px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; border: 1px solid rgba(0, 240, 212, 0.5);">🚀 ZINDIGI PRIZE PITCH PASS</span>`
+          : (isCash 
+              ? `<span style="background: rgba(16, 185, 129, 0.3); color: #34d399; padding: 2px 10px; border-radius: 12px; font-weight: 700; font-size: 0.8rem;">💵 ON-SPOT CASH PASS</span>`
+              : `<span style="background: rgba(99, 102, 241, 0.3); color: #a5b4fc; padding: 2px 10px; border-radius: 12px; font-weight: 700; font-size: 0.8rem;">🎟️ OFFICIAL PASS</span>`);
+
+        meta.innerHTML = `
+          <div style="margin-bottom: 6px;">${channelBadge}</div>
+          <div style="font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 3px;">${escapeHtml(data.student.department || '')}</div>
+          <div>Badge/Ref: <strong style="color: #38bdf8; font-family: monospace;">${escapeHtml(data.student.receipt_no || data.student.id || '-')}</strong> • ${escapeHtml(data.student.roll_no || '')}</div>
+        `;
+
+        const refInfo = isCash 
+          ? `Receipt: ${data.student.receipt_no || '-'} (Cashier: ${data.student.cashier_name || 'Desk'})` 
+          : `Ref / TRX: ${data.student.receipt_no || data.student.trx_id || '-'}`;
+        subMeta.textContent = `${refInfo} • Admitted at ${new Date().toLocaleTimeString()} by ${data.student.scanned_by || 'Gate 1'}`;
+
+        admittedCount++;
+        document.getElementById('sessionCount').textContent = admittedCount;
+        document.getElementById('lastScannedTime').textContent = new Date().toLocaleTimeString();
+
+      } else if (data.status === 'ALREADY_USED') {
+        playFraudAlertSound();
+        box.classList.add('already-used');
+        icon.textContent = '⚠️';
+        title.textContent = 'FRAUD: PASS ALREADY USED';
+        name.textContent = data.student ? data.student.name : 'Scanned Team';
+        meta.innerHTML = `
+          <div style="color: #fca5a5; font-weight: 700; font-size: 1rem;">ANTI-PASSBACK TRIGGERED! This pass was ALREADY scanned.</div>
+          <div style="margin-top: 6px; font-size: 0.88rem; color: #e2e8f0;">${escapeHtml(data.student?.department || '')} • Ref: <strong style="font-family: monospace;">${escapeHtml(data.student?.receipt_no || data.student?.id || '-')}</strong></div>
+        `;
+        subMeta.textContent = `Original Admission: ${new Date(data.checked_in_at).toLocaleTimeString()} (Scanned by: ${data.student?.checkin_by || 'Gate'})`;
+
+      } else if (data.status === 'UNVERIFIED') {
+        playFraudAlertSound();
+        box.classList.add('unverified');
+        icon.textContent = '⏳';
+        title.textContent = 'FEE PAYMENT PENDING';
+        name.textContent = data.team ? `${data.team.team_name} (${data.team.leader_name})` : (data.student ? data.student.name : '');
+        meta.innerHTML = `
+          <div style="color: #fef08a; font-weight: 700; font-size: 0.95rem;">${escapeHtml(data.message || 'Payment not verified')}</div>
+          <div style="margin-top: 6px; color: #cbd5e1; font-size: 0.85rem;">Send team to Cashier Desk to collect Rs. 1,000 cash and activate Pitch Pass.</div>
+        `;
+        subMeta.textContent = 'Entry blocked until fee verified by Cashier or Finance.';
+
+      } else {
+        playFraudAlertSound();
+        box.classList.add('invalid');
+        icon.textContent = '❌';
+        title.textContent = 'INVALID / FAKE PASS';
+        name.textContent = 'Pass Not Found';
+        meta.textContent = data.message || 'QR code not found in Zindigi Prize official registry.';
+        subMeta.textContent = 'Tampered or counterfeit pass detected. Deny entry.';
+      }
+
+      overlay.classList.add('open');
+      countFill.style.width = '100%';
+      setTimeout(() => {
+        countFill.style.width = '0%';
+      }, 50);
+
+      // Auto-dismiss after 2.8 seconds to allow continuous queue scanning
+      setTimeout(() => {
+        overlay.classList.remove('open');
+        isProcessing = false;
+        document.getElementById('manualTicketInput').value = '';
+      }, 2800);
+    }
+  </script>
+</body>
+</html>

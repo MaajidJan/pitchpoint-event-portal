@@ -1,0 +1,23 @@
+{
+  "name": "bahria-event-portal",
+  "version": "1.0.0",
+  "description": "Bahria University Event Portal with Automated Easypaisa OCR & Gmail Verification",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8787",
+    "deploy": "wrangler deploy",
+    "db:init:local": "wrangler d1 execute DB --local --file=./schema.sql",
+    "db:init:remote": "wrangler d1 execute DB --remote --file=./schema.sql"
+  },
+  "dependencies": {
+    "@vladmandic/face-api": "^1.7.15",
+    "hono": "^4.6.14",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260918.1",
+    "@types/qrcode": "^1.5.6",
+    "wrangler": "^4.135.0"
+  }
+}

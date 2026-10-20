@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <title>Venture Control Console — Zindigi Prize BSEAS-H11</title>
+  <meta name="theme-color" content="#020b0e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="ideacrux.css">
+  <script>
+    (function() {
+      try {
+        const token = localStorage.getItem('bahria_auth_token');
+        const userStr = localStorage.getItem('bahria_staff_user');
+        const user = userStr ? JSON.parse(userStr) : null;
+        if (!token || !user || (user.role !== 'ADMIN' && user.role !== 'MANAGER')) {
+          window.location.replace('/login.html?redirect=crux-admin.html');
+        }
+      } catch(e) {
+        window.location.replace('/login.html?redirect=crux-admin.html');
+      }
+    })();
+  </script>
+  <style>
+    .admin-viewport {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 4rem;
+    }
+    .hud-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border-hairline);
+      padding-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .hud-title-group h1 {
+      font-family: var(--font-display);
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+      text-transform: uppercase;
+    }
+    .hud-title-group p {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      margin-top: 4px;
+      font-family: var(--font-mono);
+    }
+    .metrics-hud {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .metric-slab {
+      background: rgba(7, 33, 40, 0.45);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+    }
+    .metric-slab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 32px;
+      height: 2px;
+      background: var(--accent-cyan);
+    }
+    .metric-slab-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .metric-slab-value {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      margin-top: 4px;
+    }
+    .controls-toolbar {
+      background: rgba(4, 20, 25, 0.7);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .filter-inputs-group {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .hud-search-input, .hud-select {
+      background: rgba(2, 11, 14, 0.8);
+      border: 1px solid var(--border-hairline);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 0.55rem 0.85rem;
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .hud-search-input:focus, .hud-select:focus {
+      border-color: var(--accent-cyan);
+    }
+    .hud-btn {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.55rem 1rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .hud-btn-cyan {
+      background: var(--accent-cyan);
+      color: var(--bg-abyss);
+      border-color: var(--accent-cyan);
+    }
+    .hud-btn-cyan:hover {
+      background: var(--accent-cyan-bright);
+    }
+    .hud-btn-outline {
+      background: transparent;
+      border-color: var(--border-active);
+      color: var(--accent-cyan);
+    }
+    .hud-btn-outline:hover {
+      background: rgba(0, 240, 212, 0.1);
+      border-color: var(--accent-cyan);
+    }
+    .hud-btn-danger {
+      background: rgba(248, 113, 113, 0.15);
+      border-color: rgba(248, 113, 113, 0.4);
+      color: #f87171;
+    }
+    .hud-btn-danger:hover {
+      background: rgba(248, 113, 113, 0.25);
+    }
+    .dossier-panel {
+      background: rgba(4, 20, 25, 0.6);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      overflow-x: auto;
+      backdrop-filter: blur(16px);
+    }
+    .hud-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      min-width: 950px;
+    }
+    .hud-table th {
+      text-align: left;
+      padding: 0.9rem 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-hairline);
+    }
+    .hud-table td {
+      padding: 1rem 0.75rem;
+      border-bottom: 1px solid rgba(0, 240, 212, 0.08);
+      vertical-align: middle;
+    }
+    .hud-table tr:hover td {
+      background: rgba(0, 240, 212, 0.02);
+    }
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .badge-status.verified {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    .badge-status.pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+    .badge-status.rejected {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+    .mobile-cards-wrap {
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    @media (max-width: 860px) {
+      .admin-viewport {
+        padding: 1rem 0.75rem 3rem;
+      }
+      .crux-nav {
+        padding: 0.5rem 0.75rem;
+      }
+      .crux-nav-inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.6rem;
+      }
+      .crux-nav-inner .brand-logo-desktop {
+        display: none !important;
+      }
+      .crux-nav-inner .brand-mobile-lockup {
+        display: flex !important;
+      }
+      .admin-nav-actions {
+        display: flex;
+        gap: 0.4rem;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+      }
+      .admin-nav-actions .hud-btn {
+        flex-shrink: 0;
+        padding: 0.4rem 0.65rem;
+        font-size: 0.74rem;
+        white-space: nowrap;
+      }
+      .metrics-hud {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.65rem;
+        margin-bottom: 1.25rem;
+      }
+      .metric-slab {
+        padding: 0.85rem 1rem;
+      }
+      .metric-slab-value {
+        font-size: 1.45rem;
+      }
+      .hud-table-wrap {
+        display: none !important;
+      }
+      .mobile-cards-wrap {
+        display: flex !important;
+      }
+      .hud-header {
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 1rem;
+      }
+      .hud-header .hud-btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+      }
+      .controls-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.65rem;
+        padding: 0.85rem;
+      }
+      .filter-inputs-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+      }
+      .hud-search-input, .hud-select {
+        width: 100% !important;
+      }
+      .bracket-tabs-bar {
+        overflow-x: auto;
+        padding-bottom: 4px;
+        flex-wrap: nowrap !important;
+        -webkit-overflow-scrolling: touch;
+      }
+      .bracket-tab {
+        flex-shrink: 0;
+        font-size: 0.72rem;
+        padding: 0.35rem 0.65rem;
+      }
+    }
+    /* Modal */
+    .hud-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 11, 14, 0.88);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .hud-modal-overlay.active {
+      display: flex;
+    }
+    .hud-modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-active);
+      border-radius: var(--radius-lg);
+      max-width: 650px;
+      width: 100%;
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 2rem;
+      position: relative;
+    }
+    /* Bracket Classification Tabs */
+    .bracket-tab {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-hairline);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.45rem 0.85rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .bracket-tab:hover {
+      border-color: var(--border-active);
+      color: #fff;
+    }
+    .bracket-tab.active {
+      background: rgba(0, 240, 212, 0.15);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      box-shadow: 0 0 10px rgba(0, 240, 212, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Telemetry Bar -->
+  <aside class="telemetry-bar">
+    <div class="telemetry-inner">
+      <div class="telemetry-unit">
+        <span class="telemetry-dot" aria-hidden="true"></span>
+        <span class="telemetry-val" style="color: var(--accent-cyan);">SYS: ONLINE</span>
+      </div>
+      <div class="telemetry-unit">
+        <span class="telemetry-key">CONTROL:</span>
+        <span class="telemetry-val">ZINDIGI PRIZE // BSEAS-H11</span>
+      </div>
+      <div class="telemetry-unit">
+        <span class="telemetry-key">VENUE:</span>
+        <span class="telemetry-val">AL-BERUNI AUDITORIUM</span>
+      </div>
+      <div class="telemetry-unit" id="forwarderStatusBadge" title="Zindigi / Raast payment forwarder phone status">
+        <span class="telemetry-dot" id="forwarderDot" style="background: #94a3b8;"></span>
+        <span class="telemetry-val" id="forwarderText" style="color: #94a3b8;">BANK SYNC: CHECKING...</span>
+      </div>
+      <div class="telemetry-unit" style="margin-left: auto;">
+        <span class="telemetry-key">OPERATOR:</span>
+        <span class="telemetry-val" id="operatorDisplay" style="color: #fff;">Admin Lead</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Navigation -->
+  <nav class="crux-nav">
+    <div class="crux-nav-inner">
+      <a href="/crux-admin.html" class="brand-logo-wrap" style="text-decoration: none;">
+        <!-- Desktop Full Logo -->
+        <img src="/assets/zindigi_pitchpoint_logo.svg" alt="Zindigi Prize BSEAS-H11 Logo" class="brand-logo-img brand-logo-desktop brand-logo-dark" style="height: 38px;">
+        <img src="/assets/zindigi_pitchpoint_logo_light.svg" alt="Zindigi Prize BSEAS-H11 Logo" class="brand-logo-img brand-logo-desktop brand-logo-light" style="height: 38px;">
+        
+        <!-- Mobile Crisp Brand Badge -->
+        <div class="brand-mobile-lockup">
+          <div class="brand-mobile-emblem">
+            <svg viewBox="0 0 40 40" width="28" height="28" fill="none">
+              <polygon points="20,2 38,11 38,29 20,38 2,29 2,11" fill="#042027" stroke="#00f0d4" stroke-width="2.5"/>
+              <polygon points="20,8 30,14 30,26 20,32 10,26 10,14" fill="#00f0d4" opacity="0.3"/>
+              <path d="M12,13 L28,13 L12,27 L28,27" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="20" cy="20" r="2.5" fill="#00f0d4"/>
+            </svg>
+          </div>
+          <div class="brand-mobile-text">
+            <span class="brand-mobile-title">ZINDIGI PRIZE</span>
+            <span class="brand-mobile-sub">BSEAS-H11</span>
+          </div>
+        </div>
+        <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-cyan); margin-left: 6px; letter-spacing: 0.5px;">// VENTURE CONTROL</span>
+      </a>
+      <div class="admin-nav-actions" style="margin-left: auto;">
+        <a href="/assets/Zindigi_Payment_Forwarder.apk" download class="hud-btn hud-btn-outline" style="font-size: 0.78rem; border-color: rgba(56, 189, 248, 0.5); color: #38bdf8;" title="Download Android Bank Forwarder APK">
+          📲 [FORWARDER APK]
+        </a>
+        <button type="button" class="hud-btn hud-btn-outline" style="font-size: 0.78rem; border-color: rgba(0, 240, 212, 0.4); color: var(--accent-cyan);" onclick="document.getElementById('adminQrModal').classList.add('active')">
+          📱 [QR CODES]
+        </button>
+        <a href="/crux-judge.html" class="hud-btn hud-btn-outline" style="font-size: 0.78rem; color: #a855f7; border-color: rgba(168, 85, 247, 0.45);" title="Open Judge Scoreboard & Private Leaderboard">
+          ⚖️ [JUDGES & LEADERBOARD]
+        </a>
+        <button type="button" class="hud-btn hud-btn-outline" style="font-size: 0.78rem; color: #f59e0b; border-color: rgba(245, 158, 11, 0.45);" onclick="openJudgeFeedbackModal()" title="View and Download Judge Event Feedback">
+          💬 [JUDGE FEEDBACK]
+        </button>
+        <button type="button" class="hud-btn hud-btn-outline" style="font-size: 0.78rem; color: #38bdf8; border-color: rgba(56, 189, 248, 0.45);" onclick="openStaffModal()" title="Manage Judges, Cashiers, and Staff Accounts">
+          👥 [STAFF & JUDGES]
+        </button>
+        <button type="button" class="hud-btn hud-btn-outline" style="font-size: 0.78rem; color: #fbbf24; border-color: rgba(251, 191, 36, 0.4);" onclick="switchAdminView('cashiers')">
+          💼 [CASHIERS & AUDIT]
+        </button>
+        <a href="/finance.html" class="hud-btn hud-btn-outline" style="font-size: 0.78rem; color: #34d399; border-color: rgba(16, 185, 129, 0.4);">
+          📒 [FINANCE QUEUE]
+        </a>
+        <a href="/ai-photos.html" class="hud-btn hud-btn-outline" style="font-size: 0.78rem; border-color: var(--accent-cyan); color: var(--accent-cyan);" title="AI Face, Outfit & Video Finder">
+          🎯 [AI PHOTO FINDER]
+        </a>
+        <a href="/crux-desk.html" class="hud-btn hud-btn-outline" style="font-size: 0.78rem;">
+          💼 [ON-SPOT DESK]
+        </a>
+        <a href="/" class="hud-btn hud-btn-outline" style="font-size: 0.78rem;">
+          🌐 [PUBLIC PORTAL]
+        </a>
+        <div id="operatorBadge" style="display: inline-flex; align-items: center; gap: 7px; background: rgba(0, 240, 212, 0.08); border: 1px solid rgba(0, 240, 212, 0.35); padding: 4px 10px; border-radius: 999px; font-family: var(--font-mono); font-size: 0.76rem;">
+          <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;" title="Real-Time Synchronization Active"></span>
+          <span id="operatorDisplay" style="color: #fff; font-weight: 700;">Admin</span>
+        </div>
+        <button type="button" class="hud-btn hud-btn-danger" style="font-size: 0.78rem;" onclick="logoutAdmin()">
+          [SIGN OUT]
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="admin-viewport">
+    
+    <!-- Header -->
+    <header class="hud-header">
+      <div class="hud-title-group">
+        <h1>Venture Pipeline & Founders Dossier</h1>
+        <p>// Zindigi Prize On-Campus Round • BSEAS H-11 Campus</p>
+      </div>
+      <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+        <button type="button" class="hud-btn hud-btn-outline" onclick="document.getElementById('adminQrModal').classList.add('active')" title="View and download high-resolution event QR codes for posters and projection">
+          📱 [EVENT QR CODES]
+        </button>
+        <button type="button" class="hud-btn hud-btn-cyan" onclick="exportCruxTeamsCSV()" title="Export startup teams into formatted Excel CSV with maturity brackets">
+          📊 [EXPORT EXCEL / CSV]
+        </button>
+        <div style="display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 0.72rem; color: #34d399; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.35); padding: 4px 10px; border-radius: var(--radius-sm);" title="Auto-synchronizing every 5 seconds so all admins see identical live updates">
+          <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></span>
+          <span id="syncIndicator">LIVE SYNC: 🟢 ACTIVE</span>
+        </div>
+        <button type="button" class="hud-btn hud-btn-outline" onclick="loadCruxAdminData(false)">
+          [REFRESH]
+        </button>
+      </div>
+    </header>
+
+    <!-- View Mode Switcher: Startup Teams vs Cashier & Shift Audit -->
+    <div class="admin-view-tabs" style="display: flex; gap: 0.6rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-hairline); padding-bottom: 0.75rem; flex-wrap: wrap;">
+      <button id="viewBtnTeams" class="hud-btn hud-btn-cyan" onclick="switchAdminView('teams')">
+        👥 STARTUP TEAMS PIPELINE
+      </button>
+      <button id="viewBtnCashiers" class="hud-btn hud-btn-outline" style="border-color: #fbbf24; color: #fbbf24;" onclick="switchAdminView('cashiers')">
+        💼 CASHIER AUDIT & SHIFT LEDGER
+      </button>
+    </div>
+
+    <!-- 1. STARTUP TEAMS PIPELINE VIEW -->
+    <section id="teamsPipelineSection">
+
+      <!-- Live Pitch Stage & Queue Master Controller -->
+      <section class="hud-card" style="background: linear-gradient(135deg, rgba(3, 33, 40, 0.95), rgba(2, 11, 14, 0.98)); border: 1.5px solid var(--accent-cyan); border-radius: var(--radius-md); padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 10px 30px rgba(0, 240, 212, 0.12);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 10px #ef4444; display: inline-block;"></span>
+            <div>
+              <div style="font-family: var(--font-mono); font-size: 0.72rem; color: #ef4444; font-weight: 800; letter-spacing: 1px;">🔴 AUDITORIUM STAGE OPERATIONS</div>
+              <h3 style="font-family: var(--font-display); font-size: 1.2rem; color: #fff; margin-top: 2px;">Live Pitch Queue & Call-Up Controller</h3>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+            <a href="/results.csv" download="PitchPoint_Judging_Leaderboard_2026.csv" class="hud-btn hud-btn-outline" style="font-size: 0.74rem; border-color: #10b981; color: #34d399; text-decoration: none;" title="Download clean Excel / CSV of all judging scores, averages & individual judge values">
+              📥 [DOWNLOAD JUDGING RESULTS EXCEL]
+            </a>
+            <div id="adminDeadlineBadge" style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(251, 191, 36, 0.12); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); padding: 4px 10px; border-radius: 6px;">
+              ⏰ Deadline: 14 Oct 11:59 PM PKT
+            </div>
+            <button type="button" class="hud-btn hud-btn-outline" style="font-size: 0.74rem; border-color: rgba(239, 68, 68, 0.5); color: #f87171;" onclick="resetAllJudgeScoresPrompt()" title="Clear all judge evaluation scores and reset leaderboard">
+              🗑️ [RESET JUDGE SCORES]
+            </button>
+            <button type="button" class="hud-btn hud-btn-outline" style="font-size: 0.74rem;" onclick="openDeadlineSettingsModal()" title="Override registration deadline (Auto / Force Open / Force Closed)">
+              ⚙️ [DEADLINE MODE]
+            </button>
+          </div>
+        </div>
+
+        <!-- Stage Queue Selection Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+          <!-- 1. Currently Pitching -->
+          <div>
+            <label class="form-label" style="font-size: 0.75rem; color: var(--accent-cyan); display: flex; align-items: center; gap: 6px; font-weight: 700;">
+              <span>🎤 1. CURRENTLY PRESENTING</span>
+            </label>
+            <select id="stageCurrentTeamSelect" class="hud-select" style="width: 100%; font-size: 0.85rem;">
+              <option value="">-- No Team Selected (Stage Idle) --</option>
+            </select>
+          </div>
+
+          <!-- 2. Next Up In Queue -->
+          <div>
+            <label class="form-label" style="font-size: 0.75rem; color: #c084fc; display: flex; align-items: center; gap: 6px; font-weight: 700;">
+              <span>⏭️ 2. NEXT UP IN QUEUE</span>
+            </label>
+            <select id="stageNextTeamSelect" class="hud-select" style="width: 100%; font-size: 0.85rem;">
+              <option value="">-- No Team Selected --</option>
+            </select>
+          </div>
+
+          <!-- 3. Stage Status -->
+          <div>
+            <label class="form-label" style="font-size: 0.75rem; color: #fff; font-weight: 700;">
+              <span>📡 STAGE STATUS TEXT</span>
+            </label>
+            <select id="stageStatusSelect" class="hud-select" style="width: 100%; font-size: 0.85rem;">
+              <option value="PITCH_IN_PROGRESS">🎤 Pitch In Progress</option>
+              <option value="JUDGE_QA">⚖️ Q&A With Judges</option>
+              <option value="NEXT_TEAM_READY">⏭️ Next Team Take Position</option>
+              <option value="STAGE_BREAK">☕ Stage Short Break / Deliberation</option>
+              <option value="STAGE_READY">🟢 Stage Ready</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 0.75rem;">
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #cbd5e1; cursor: pointer;">
+            <input type="checkbox" id="chkSendEmailToNext" checked style="accent-color: var(--accent-cyan); width: 16px; height: 16px;">
+            <span>Auto-send urgent call-up email to Next Team Leader ("You are next on stage!")</span>
+          </label>
+
+          <button type="button" class="hud-btn hud-btn-cyan" style="font-size: 0.82rem; padding: 6px 16px;" onclick="updateLivePitchStage()">
+            📢 [BROADCAST LIVE STAGE UPDATE]
+          </button>
+        </div>
+      </section>
+
+      <!-- Metrics Bento HUD -->
+      <section class="metrics-hud" aria-label="Pipeline Metrics">
+        <div class="metric-slab">
+          <div class="metric-slab-label">Total Registered Teams</div>
+          <div class="metric-slab-value" id="hudMetricTotal">0</div>
+        </div>
+        <div class="metric-slab">
+          <div class="metric-slab-label">Verified & Pitch Pass Issued</div>
+          <div class="metric-slab-value" style="color: #34d399;" id="hudMetricVerified">0</div>
+        </div>
+        <div class="metric-slab">
+          <div class="metric-slab-label">Awaiting Escrow Verification</div>
+          <div class="metric-slab-value" style="color: #fbbf24;" id="hudMetricPending">0</div>
+        </div>
+        <div class="metric-slab">
+          <div class="metric-slab-label">Total Venture Escrow (PKR)</div>
+          <div class="metric-slab-value" style="color: var(--accent-cyan);" id="hudMetricRevenue">Rs. 0</div>
+        </div>
+      </section>
+
+      <!-- Venture Maturity Classification Brackets -->
+      <section class="bracket-tabs-bar" style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;" aria-label="Venture Maturity Brackets">
+        <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-right: 4px;">
+          CLASSIFICATION BRACKETS:
+        </span>
+        <button type="button" class="bracket-tab active" onclick="setBracketFilter('ALL', this)">
+          All Brackets (<span id="bracketCountAll">0</span>)
+        </button>
+        <button type="button" class="bracket-tab" onclick="setBracketFilter('Idea Stage', this)">
+          💡 Bracket A: Idea Stage (<span id="bracketCountIdea">0</span>)
+        </button>
+        <button type="button" class="bracket-tab" onclick="setBracketFilter('Prototype', this)">
+          🛠️ Bracket B: Prototype (<span id="bracketCountProto">0</span>)
+        </button>
+        <button type="button" class="bracket-tab" onclick="setBracketFilter('Working MVP', this)">
+          ⚡ Bracket C: Working MVP (<span id="bracketCountMVP">0</span>)
+        </button>
+        <button type="button" class="bracket-tab" onclick="setBracketFilter('Market Ready', this)">
+          🚀 Bracket D: Market Ready (<span id="bracketCountMarket">0</span>)
+        </button>
+      </section>
+
+      <!-- Search & Filters Toolbar -->
+      <section class="controls-toolbar" aria-label="Dossier Controls">
+        <div class="filter-inputs-group">
+          <input type="text" id="hudSearchInput" class="hud-search-input" placeholder="Search team, leader, startup, dept..." style="width: 280px;" oninput="filterCruxTeams()">
+          <select id="hudStatusFilter" class="hud-select" onchange="filterCruxTeams()">
+            <option value="ALL">All Pass Statuses</option>
+            <option value="PENDING">Pending Escrow</option>
+            <option value="VERIFIED">Verified / Admitted</option>
+            <option value="REJECTED">Rejected</option>
+          </select>
+          <select id="hudStageFilter" class="hud-select" onchange="filterCruxTeams()">
+            <option value="ALL">All Venture Stages</option>
+            <option value="Idea Stage">Idea Stage</option>
+            <option value="Prototype">Prototype</option>
+            <option value="Working MVP">Working MVP</option>
+            <option value="Market Ready">Market Ready</option>
+          </select>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">
+          SHOWING: <span id="hudFilteredCount" style="color: var(--accent-cyan); font-weight: 700;">0</span> TEAMS
+        </div>
+      </section>
+
+      <!-- Teams Dossier Container -->
+      <section class="dossier-panel">
+        <!-- Desktop Table -->
+        <div class="hud-table-wrap">
+          <table class="hud-table">
+            <thead>
+              <tr>
+                <th>Team & Venture</th>
+                <th>Founder Roster & Contact</th>
+                <th>Problem & Summary</th>
+                <th>Stage & Pitch Deck</th>
+                <th>Fee / TRX</th>
+                <th>Gate Status</th>
+                <th>Action Controls</th>
+              </tr>
+            </thead>
+            <tbody id="hudTeamsTbody">
+              <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem; font-family: var(--font-mono);">
+                  Loading Zindigi Prize venture dossiers...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Cards Container -->
+        <div id="hudMobileCardsContainer" class="mobile-cards-wrap"></div>
+      </section>
+    </section>
+
+    <!-- 2. DEDICATED CASHIER AUDIT & SHIFT LEDGER VIEW -->
+    <section id="cashierAuditSection" style="display: none;">
+      <!-- Cashier Top Metrics Strip -->
+      <section class="metrics-hud" aria-label="Cashier Metrics">
+        <div class="metric-slab">
+          <div class="metric-slab-label">Assigned Cashiers</div>
+          <div class="metric-slab-value" id="cashierMetricCount">0</div>
+        </div>
+        <div class="metric-slab">
+          <div class="metric-slab-label">Total Cash Collected</div>
+          <div class="metric-slab-value" style="color: #34d399;" id="cashierMetricTotalCash">Rs. 0</div>
+        </div>
+        <div class="metric-slab">
+          <div class="metric-slab-label">On-Spot Walk-in Teams</div>
+          <div class="metric-slab-value" style="color: var(--accent-cyan);" id="cashierMetricTeamsCount">0</div>
+        </div>
+        <div class="metric-slab">
+          <div class="metric-slab-label">Active Open Shifts</div>
+          <div class="metric-slab-value" style="color: #fbbf24;" id="cashierMetricOpenShifts">0</div>
+        </div>
+      </section>
+
+      <!-- Cashier Management & Roster Card -->
+      <div class="dossier-panel" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-family: var(--font-mono); font-size: 0.75rem; color: #fbbf24; font-weight: 700;">[STAFF ACCESS & CASHIERS]</div>
+            <h2 style="font-family: var(--font-display); font-size: 1.45rem; color: #fff; margin-top: 2px;">Assigned Cashiers Roster</h2>
+            <p style="font-size: 0.82rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px;">Assign, manage, and revoke counter cashiers directly from this console.</p>
+          </div>
+          <button type="button" class="hud-btn hud-btn-cyan" onclick="toggleAddCashierInline()">
+            [+ ASSIGN NEW CASHIER]
+          </button>
+        </div>
+
+        <!-- Inline Add / Edit Cashier Form -->
+        <div id="inlineCashierForm" style="display: none; background: rgba(2, 11, 14, 0.95); border: 1px solid var(--border-active); border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h4 id="cashierFormTitle" style="font-family: var(--font-display); color: #fff; font-size: 1.1rem; margin-bottom: 1rem;">
+            Assign New Cashier Account
+          </h4>
+          <input type="hidden" id="cashierEditId" value="">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+            <div>
+              <label class="form-label" style="font-size: 0.75rem;">Full Name *</label>
+              <input type="text" id="cashierFullName" class="hud-search-input" style="width: 100%;" placeholder="e.g. Ali Ahmed" required>
+            </div>
+            <div>
+              <label class="form-label" style="font-size: 0.75rem;">Username (Login ID) *</label>
+              <input type="text" id="cashierUsername" class="hud-search-input" style="width: 100%;" placeholder="e.g. cashier2" required autocomplete="off">
+            </div>
+            <div>
+              <label class="form-label" style="font-size: 0.75rem;">Password *</label>
+              <input type="password" id="cashierPassword" class="hud-search-input" style="width: 100%;" placeholder="Set secure password" autocomplete="new-password">
+              <span style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);">Encrypted via PBKDF2/SHA-256</span>
+            </div>
+            <div>
+              <label class="form-label" style="font-size: 0.75rem;">Mobile / WhatsApp (Optional)</label>
+              <input type="tel" id="cashierPhone" class="hud-search-input" style="width: 100%;" placeholder="03XXXXXXXXX">
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.6rem; justify-content: flex-end;">
+            <button type="button" class="hud-btn hud-btn-outline" onclick="toggleAddCashierInline()">Cancel</button>
+            <button type="button" class="hud-btn hud-btn-cyan" onclick="saveCashierAccount()">Save Cashier</button>
+          </div>
+        </div>
+
+        <!-- Cashier Roster Table -->
+        <div style="overflow-x: auto;">
+          <table class="hud-table" style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Cashier / Operator</th>
+                <th>Login Username</th>
+                <th>Contact</th>
+                <th>Total Cash Collected</th>
+                <th>Passes Issued</th>
+                <th>Shift State</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="cashierRosterTbody">
+              <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading cashier roster...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Detailed Itemized Transaction Ledger ("Who, When, How Much") -->
+      <div class="dossier-panel" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan); font-weight: 700;">[WHO, WHEN, HOW MUCH]</div>
+            <h2 style="font-family: var(--font-display); font-size: 1.45rem; color: #fff; margin-top: 2px;">Cashier Registration Ledger</h2>
+            <p style="font-size: 0.82rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px;">Exact audit trail: every team registered, cashier name, amount, and exact timestamp.</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+            <select id="filterCashierNameSelect" class="hud-select" onchange="filterCashierLedger()">
+              <option value="ALL">All Cashiers</option>
+            </select>
+            <input type="text" id="searchCashierTxs" class="hud-search-input" placeholder="Search team or receipt..." oninput="filterCashierLedger()" style="width: 220px;">
+          </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="hud-table" style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Receipt #</th>
+                <th>Cashier Name</th>
+                <th>Registered Team & Venture</th>
+                <th>Leader & Contact</th>
+                <th>Cash Collected</th>
+                <th>Exact Timestamp</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="cashierTransactionsTbody">
+              <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">No cash registrations recorded yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Shift History Table -->
+      <div class="dossier-panel">
+        <div style="margin-bottom: 1rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.75rem; color: #fbbf24; font-weight: 700;">[DRAWER HANDOVERS & SHIFTS]</div>
+          <h2 style="font-family: var(--font-display); font-size: 1.45rem; color: #fff; margin-top: 2px;">Shift Log & Drawer History</h2>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="hud-table" style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Shift ID</th>
+                <th>Cashier Name</th>
+                <th>Desk #</th>
+                <th>Started At</th>
+                <th>Closed At</th>
+                <th>Cash Collected</th>
+                <th>Passes Sold</th>
+                <th>Handover State</th>
+              </tr>
+            </thead>
+            <tbody id="shiftsHistoryTbody">
+              <tr>
+                <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading shift logs...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Turnstile Pitch Pass Preview Modal -->
+  <div class="hud-modal-overlay" id="pitchPassModal">
+    <div class="hud-modal-card" style="text-align: center;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <span style="font-family: var(--font-mono); color: var(--accent-cyan); font-size: 0.82rem; font-weight: 700;">
+          [VENTURE CREDENTIAL PREVIEW]
+        </span>
+        <button type="button" class="hud-btn hud-btn-outline" style="padding: 2px 8px;" onclick="closePassModal()">✕</button>
+      </div>
+
+      <!-- Pass Visual Preview Frame -->
+      <div id="passModalVisual" style="background: #020b0e; border: 2px solid var(--accent-cyan); border-radius: var(--radius-md); padding: 1.75rem 1.25rem; margin-bottom: 1.5rem; position: relative;">
+        <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-cyan); letter-spacing: 1px;">
+          ZINDIGI PRIZE ON-CAMPUS ROUND // BSEAS H-11
+        </div>
+        <h3 id="modalPassTeamName" style="font-family: var(--font-display); color: #fff; font-size: 1.5rem; margin-top: 4px; text-transform: uppercase;">-</h3>
+        <div id="modalPassStartup" style="color: var(--accent-cyan-bright); font-size: 0.95rem; font-weight: 700;">-</div>
+
+        <div style="margin: 1.25rem auto; width: 200px; height: 200px; background: #fff; padding: 10px; border-radius: 8px;">
+          <img id="modalPassQrImg" src="" alt="Turnstile QR" style="width: 100%; height: 100%; object-fit: contain;">
+        </div>
+
+        <div style="font-family: var(--font-mono); font-size: 0.9rem; color: #fff; font-weight: 700;">
+          PASS ID: <span id="modalPassId" style="color: var(--accent-cyan);">-</span>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-muted); margin-top: 4px;">
+          VENUE: AL-BERUNI AUDITORIUM • 15 OCT 2026
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+        <button type="button" class="hud-btn hud-btn-cyan" id="btnModalDownloadPng">
+          [DOWNLOAD BADGE PNG]
+        </button>
+        <button type="button" class="hud-btn hud-btn-outline" id="btnModalShareWa">
+          [WHATSAPP TO LEADER]
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- High-Res Payment Slip Inspection Modal -->
+  <div class="hud-modal-overlay" id="cruxSlipZoomModal">
+    <div class="hud-modal-card" style="max-width: 760px; max-height: 94vh; display: flex; flex-direction: column; padding: 1.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-hairline); padding-bottom: 0.75rem;">
+        <div>
+          <div style="font-family: var(--font-mono); color: var(--accent-cyan); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px;">
+            [PAYMENT PROOF VERIFICATION]
+          </div>
+          <h3 id="cruxSlipModalTitle" style="font-family: var(--font-display); color: #fff; font-size: 1.35rem; margin-top: 2px; text-transform: uppercase;">
+            Team Slip
+          </h3>
+          <div id="cruxSlipModalSub" style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;">
+            TRX: -
+          </div>
+        </div>
+        <button type="button" class="hud-btn hud-btn-outline" style="padding: 4px 10px; font-size: 0.85rem;" onclick="closeCruxSlipZoom()">✕</button>
+      </div>
+
+      <!-- Screenshot Display Box -->
+      <div style="flex: 1; overflow-y: auto; text-align: center; background: #01080a; border: 1px solid var(--border-active); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1rem; min-height: 280px; max-height: 52vh; display: flex; align-items: center; justify-content: center;">
+        <img id="cruxSlipModalImg" src="" alt="Payment Receipt Screenshot" style="max-width: 100%; max-height: 50vh; object-fit: contain; border-radius: 6px; box-shadow: 0 4px 20px rgba(0,0,0,0.6);">
+      </div>
+
+      <!-- Slip Details Summary Box -->
+      <div style="background: rgba(2, 11, 14, 0.9); border: 1px solid var(--border-hairline); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; font-size: 0.82rem;">
+        <div>
+          <span style="color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase;">Leader & Contact:</span>
+          <div id="cruxSlipModalLeader" style="color: #fff; font-weight: 700; margin-top: 2px;">-</div>
+          <div id="cruxSlipModalPhone" style="color: var(--accent-cyan); font-family: var(--font-mono); font-size: 0.78rem;">-</div>
+        </div>
+        <div>
+          <span style="color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase;">Maturity Bracket:</span>
+          <div id="cruxSlipModalBracket" style="color: #fff; font-weight: 600; margin-top: 2px;">-</div>
+          <div id="cruxSlipModalStatus" style="margin-top: 2px;">-</div>
+        </div>
+        <div>
+          <span style="color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase;">Fee & Transaction:</span>
+          <div id="cruxSlipModalFee" style="color: #34d399; font-weight: 800; font-size: 1.05rem; font-family: var(--font-mono); margin-top: 2px;">Rs. 1,000</div>
+          <div id="cruxSlipModalTrx" style="color: var(--accent-cyan); font-family: var(--font-mono); font-size: 0.78rem;">TRX: -</div>
+        </div>
+      </div>
+
+      <!-- Live Unclaimed Bank Deposits Matching Block -->
+      <div id="cruxSlipUnclaimedMatchContainer" style="background: rgba(4, 20, 25, 0.85); border: 1px dashed rgba(56, 189, 248, 0.35); border-radius: var(--radius-sm); padding: 0.85rem; margin-bottom: 1rem; display: none;"></div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; gap: 0.6rem; justify-content: flex-end; flex-wrap: wrap;">
+        <a id="cruxSlipModalWaBtn" href="#" target="_blank" class="hud-btn hud-btn-outline" style="font-size: 0.76rem;">
+          💬 [WHATSAPP LEADER]
+        </a>
+        <a id="cruxSlipModalFullImgBtn" href="#" target="_blank" class="hud-btn hud-btn-outline" style="font-size: 0.76rem;">
+          ↗ [OPEN FULL IMAGE]
+        </a>
+        <div id="cruxSlipModalDecisionBtns" style="display: inline-flex; gap: 0.5rem;"></div>
+        <button type="button" class="hud-btn hud-btn-outline" style="font-size: 0.76rem;" onclick="closeCruxSlipZoom()">
+          [CLOSE]
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Codes Hub Modal for Admin -->
+  <div class="hud-modal-overlay" id="adminQrModal">
+    <div class="hud-modal-card" style="max-width: 760px; text-align: center;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="font-family: var(--font-display); color: #fff; font-size: 1.35rem;">📱 Zindigi Prize BSEAS-H11 QR Code & App Hub</h3>
+        <button type="button" class="hud-btn hud-btn-outline" style="font-size: 0.8rem; padding: 2px 8px;" onclick="document.getElementById('adminQrModal').classList.remove('active')">✕</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="background: rgba(2, 11, 14, 0.9); border: 1px solid var(--border-active); border-radius: 12px; padding: 1rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.4rem;">
+            🌐 PUBLIC PORTAL
+          </div>
+          <div style="background: #fff; padding: 4px; border-radius: 8px; display: inline-block; margin-bottom: 0.5rem;">
+            <img src="/assets/pitchpoint_public_qr.png" alt="Public QR" style="width: 120px; height: 120px; display: block;">
+          </div>
+          <div style="font-size: 0.74rem; font-family: var(--font-mono); color: var(--accent-cyan); margin-bottom: 4px;">tinyurl.com/pitchpoint-bu</div>
+          <div style="font-size: 0.72rem; color: var(--text-muted);">For founders to register & check pass</div>
+          <div style="margin-top: 0.5rem; display: flex; gap: 4px; justify-content: center;">
+            <a href="/assets/pitchpoint_public_qr.png" download="PITCHPOINT_2026_PUBLIC_QR.png" class="hud-btn hud-btn-outline" style="font-size: 0.7rem; padding: 2px 6px;">
+              PNG
+            </a>
+            <a href="/assets/pitchpoint_public_qr.svg" download="PITCHPOINT_2026_PUBLIC_QR.svg" class="hud-btn hud-btn-outline" style="font-size: 0.7rem; padding: 2px 6px;">
+              SVG
+            </a>
+          </div>
+        </div>
+
+        <div style="background: rgba(2, 11, 14, 0.9); border: 1px solid rgba(251, 191, 36, 0.4); border-radius: 12px; padding: 1rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.72rem; color: #fbbf24; font-weight: 700; margin-bottom: 0.4rem;">
+            💼 CASHIER DESK
+          </div>
+          <div style="background: #fff; padding: 4px; border-radius: 8px; display: inline-block; margin-bottom: 0.5rem;">
+            <img src="/assets/qr_cashier_desk.svg" alt="Cashier Desk QR" style="width: 120px; height: 120px; display: block;">
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">On-spot registration counters</div>
+          <a href="/assets/qr_cashier_desk.svg" download="Cashier_Desk_QR.svg" class="hud-btn hud-btn-outline" style="font-size: 0.7rem; margin-top: 0.4rem; display: inline-block;">
+            Save SVG
+          </a>
+        </div>
+
+        <div style="background: rgba(2, 11, 14, 0.9); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 1rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.72rem; color: #34d399; font-weight: 700; margin-bottom: 0.4rem;">
+            ⚡ ZINDIGI / RAAST
+          </div>
+          <div style="background: #fff; padding: 4px; border-radius: 8px; display: inline-block; margin-bottom: 0.5rem;">
+            <img src="/assets/zindigi_payment_qr.jpg" alt="Payment QR" style="width: 120px; height: 120px; object-fit: contain; display: block;">
+          </div>
+          <div style="font-size: 0.75rem; color: #34d399; font-weight: 600;">Rs. 1,000 Fee</div>
+          <a href="/assets/zindigi_payment_qr.jpg" download="Zindigi_Payment_Card.jpg" class="hud-btn hud-btn-outline" style="font-size: 0.7rem; margin-top: 0.4rem; display: inline-block;">
+            Save Card
+          </a>
+        </div>
+
+        <div style="background: rgba(2, 11, 14, 0.9); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 12px; padding: 1rem;">
+          <div style="font-family: var(--font-mono); font-size: 0.72rem; color: #38bdf8; font-weight: 700; margin-bottom: 0.4rem;">
+            📲 FORWARDER APK
+          </div>
+          <div style="background: rgba(56, 189, 248, 0.1); border-radius: 8px; width: 120px; height: 120px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+            <span style="font-size: 3rem;">⚡</span>
+          </div>
+          <div style="font-size: 0.75rem; color: #38bdf8; font-weight: 600;">Bank Sync APK</div>
+          <a href="/assets/Zindigi_Payment_Forwarder.apk" download="Zindigi_Payment_Forwarder.apk" class="hud-btn hud-btn-outline" style="font-size: 0.7rem; margin-top: 0.4rem; display: inline-block; border-color: #38bdf8; color: #38bdf8;">
+            Download APK
+          </a>
+        </div>
+      </div>
+
+      <button type="button" class="hud-btn hud-btn-cyan" style="width: 100%;" onclick="document.getElementById('adminQrModal').classList.remove('active')">
+        [CLOSE]
+      </button>
+    </div>
+  </div>
+
+  <!-- Staff & Cashier Assignment Modal -->
+  <div class="hud-modal-overlay" id="staffModal">
+    <div class="hud-modal-card" style="max-width: 750px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 0.75rem; color: #a855f7; font-weight: 700;">[STAFF & JUDGES ACCESS CONTROL]</div>
+          <h3 style="font-family: var(--font-display); color: #fff; font-size: 1.4rem; margin-top: 2px;">Manage Judges, Cashiers & Operators</h3>
+        </div>
+        <button type="button" class="hud-btn hud-btn-outline" style="padding: 4px 10px;" onclick="closeStaffModal()">✕</button>
+      </div>
+
+      <!-- Add Staff / Judge Toggle Buttons -->
+      <div style="margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+        <span style="font-size: 0.82rem; color: var(--text-muted); font-family: var(--font-mono);">Active Evaluators & Operators</span>
+        <div style="display: flex; gap: 0.5rem;">
+          <button type="button" class="hud-btn" style="font-size: 0.78rem; background: rgba(168, 85, 247, 0.2); border-color: #a855f7; color: #d8b4fe;" onclick="openAddJudgeForm()">
+            ⚖️ [+ CREATE JUDGE ID]
+          </button>
+          <button type="button" class="hud-btn hud-btn-cyan" style="font-size: 0.78rem;" id="btnToggleAddStaff" onclick="toggleAddStaffForm()">
+            [+ ASSIGN OTHER STAFF]
+          </button>
+        </div>
+      </div>
+
+      <div id="addStaffFormContainer" style="display: none; background: rgba(2, 11, 14, 0.9); border: 1px solid var(--border-active); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+        <h4 style="font-family: var(--font-display); color: #fff; font-size: 1.05rem; margin-bottom: 0.75rem;" id="staffFormHeading">Create / Update Staff Account</h4>
+        <form id="newStaffForm" onsubmit="return false;">
+          <input type="hidden" id="staffEditId" value="">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div>
+              <label class="form-label" style="font-size: 0.75rem;">Full Name *</label>
+              <input type="text" id="staffFullName" class="hud-search-input" style="width: 100%;" placeholder="e.g. Khuram Idrees" required>
+            </div>
+            <div>
+              <label class="form-label" style="font-size: 0.75rem;">Username (Login ID) *</label>
+              <input type="text" id="staffUsername" class="hud-search-input" style="width: 100%;" placeholder="e.g. khuram.idrees" required autocomplete="off">
+            </div>
+          </div>
+          <div style="margin-bottom: 0.75rem;">
+            <label class="form-label" style="font-size: 0.75rem;">Designation / Title (e.g. CEO, Regional Manager, Professor)</label>
+            <input type="text" id="staffTitle" class="hud-search-input" style="width: 100%;" placeholder="e.g. CEO, Icarus Incorporated & Neelas Digital | Board Member, DAN">
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <label class="form-label" style="font-size: 0.75rem; margin-bottom: 0;">Password *</label>
+                <button type="button" onclick="toggleStaffPasswordInput()" style="background: none; border: none; color: var(--accent-cyan); cursor: pointer; font-size: 0.72rem; font-family: var(--font-mono); padding: 0;">👁️ Show / Hide</button>
+              </div>
+              <input type="password" id="staffPassword" class="hud-search-input" style="width: 100%; font-family: var(--font-mono);" placeholder="Set secure password" autocomplete="new-password">
+              <span style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);">PBKDF2/SHA-256 (Constant-time auth)</span>
+            </div>
+            <div>
+              <label class="form-label" style="font-size: 0.75rem;">Role *</label>
+              <select id="staffRole" class="hud-select" style="width: 100%;">
+                <option value="JUDGE">⚖️ JUDGE (Official Scorecard & Evaluations)</option>
+                <option value="STAGE_COORDINATOR">📋 STAGE COORDINATOR (Slots, Arrival & Queue)</option>
+                <option value="VIEW_ONLY">📖 VIEW ONLY (Presenter Directory & WhatsApp Only)</option>
+                <option value="CASHIER">💵 CASHIER (On-Spot Desk & QR Pass Issuance)</option>
+                <option value="GATE_SCANNER">🔍 GATE SCANNER (Turnstile Verification)</option>
+                <option value="FINANCE">📊 FINANCE (Payment Verification & Ledgers)</option>
+                <option value="ADMIN">🛡️ ADMIN (Full System Master Access)</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.75rem;">Staff Mobile / WhatsApp (Optional)</label>
+            <input type="tel" id="staffPhone" class="hud-search-input" style="width: 100%;" placeholder="03XXXXXXXXX">
+          </div>
+          <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+            <button type="button" class="hud-btn hud-btn-outline" onclick="toggleAddStaffForm()">Cancel</button>
+            <button type="button" class="hud-btn hud-btn-cyan" onclick="saveStaffUser()">Save Account</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Staff Members Table -->
+      <div style="overflow-x: auto;">
+        <table class="hud-table" style="width: 100%;">
+          <thead>
+            <tr>
+              <th>Operator / Official Title</th>
+              <th>Login ID</th>
+              <th>Password (Admin View)</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="staffTableBody">
+            <tr>
+              <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading staff list...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 1.5rem; text-align: right;">
+        <button type="button" class="hud-btn hud-btn-outline" onclick="closeStaffModal()">[CLOSE]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Judge Event Feedback Inspection Modal for Admin -->
+  <div class="hud-modal-overlay" id="adminJudgeFeedbackModal">
+    <div class="hud-modal-card" style="max-width: 900px; max-height: 92vh; display: flex; flex-direction: column; padding: 1.75rem;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-hairline); padding-bottom: 0.75rem; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 0.74rem; color: #fbbf24; font-weight: 700; letter-spacing: 0.5px;">
+            [EXECUTIVE REVIEW & RETROSPECTIVE]
+          </div>
+          <h3 style="font-family: var(--font-display); color: #fff; font-size: 1.35rem; margin-top: 2px;">
+            💬 Judges & Evaluators Event Feedback
+          </h3>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
+            Confidential event ratings, strengths, and recommendations submitted by judges.
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+          <a href="/api/admin/judge-feedback/export-csv" download="PitchPoint_Judge_Event_Feedback.csv" class="hud-btn hud-btn-outline" style="font-size: 0.76rem; border-color: #10b981; color: #34d399;" title="Download complete feedback report as CSV">
+            📥 [EXPORT CSV]
+          </a>
+          <button type="button" class="hud-btn hud-btn-outline" style="font-size: 0.76rem;" onclick="loadAdminJudgeFeedback()">
+            ↺ [REFRESH]
+          </button>
+          <button type="button" class="hud-btn hud-btn-outline" style="padding: 4px 10px; font-size: 0.85rem;" onclick="closeJudgeFeedbackModal()">✕</button>
+        </div>
+      </div>
+
+      <!-- KPI Metrics Slabs -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin-bottom: 1.25rem;">
+        <div style="background: rgba(2, 11, 14, 0.8); border: 1px solid var(--border-hairline); border-radius: var(--radius-sm); padding: 0.75rem; text-align: center;">
+          <div style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted);">FEEDBACK COUNT</div>
+          <div id="fbKpiCount" style="font-family: var(--font-display); font-size: 1.4rem; color: var(--accent-cyan); font-weight: 800; margin-top: 2px;">0</div>
+        </div>
+        <div style="background: rgba(2, 11, 14, 0.8); border: 1px solid var(--border-hairline); border-radius: var(--radius-sm); padding: 0.75rem; text-align: center;">
+          <div style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted);">OVERALL RATING</div>
+          <div id="fbKpiOverall" style="font-family: var(--font-display); font-size: 1.4rem; color: #fbbf24; font-weight: 800; margin-top: 2px;">-</div>
+        </div>
+        <div style="background: rgba(2, 11, 14, 0.8); border: 1px solid var(--border-hairline); border-radius: var(--radius-sm); padding: 0.75rem; text-align: center;">
+          <div style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted);">STAGE & ORG</div>
+          <div id="fbKpiOrg" style="font-family: var(--font-display); font-size: 1.4rem; color: #34d399; font-weight: 800; margin-top: 2px;">-</div>
+        </div>
+        <div style="background: rgba(2, 11, 14, 0.8); border: 1px solid var(--border-hairline); border-radius: var(--radius-sm); padding: 0.75rem; text-align: center;">
+          <div style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted);">PITCH QUALITY</div>
+          <div id="fbKpiPitch" style="font-family: var(--font-display); font-size: 1.4rem; color: #38bdf8; font-weight: 800; margin-top: 2px;">-</div>
+        </div>
+        <div style="background: rgba(2, 11, 14, 0.8); border: 1px solid var(--border-hairline); border-radius: var(--radius-sm); padding: 0.75rem; text-align: center;">
+          <div style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted);">VENUE & HOSPITALITY</div>
+          <div id="fbKpiVenue" style="font-family: var(--font-display); font-size: 1.4rem; color: #a855f7; font-weight: 800; margin-top: 2px;">-</div>
+        </div>
+      </div>
+
+      <!-- Scrollable List of Submissions -->
+      <div id="adminFeedbackListContainer" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; padding-right: 4px;">
+        <div style="text-align: center; color: var(--text-muted); padding: 2.5rem; font-family: var(--font-mono);">
+          Loading judge evaluations and feedback...
+        </div>
+      </div>
+
+      <div style="margin-top: 1.25rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-hairline); padding-top: 0.75rem;">
+        <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim);">
+          Isolated data layer • Zero impact on judging scorecards or leaderboard
+        </span>
+        <button type="button" class="hud-btn hud-btn-outline" onclick="closeJudgeFeedbackModal()">[CLOSE]</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="crux-admin.js"></script>
+</body>
+</html>
